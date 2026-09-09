@@ -30,7 +30,7 @@ test:
 	.venv/bin/python -m pytest tests/ -q
 
 lint:
-	@echo "Runnin lint tests..."
+	@echo "Running lint tests..."
 	.venv/bin/ruff check . && .venv/bin/ruff format --check .
 
 format: 
