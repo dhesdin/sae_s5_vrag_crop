@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field
 
 
 class BoundingBox(BaseModel):
+    """Schema representing a bounding box around a detected object."""
     x: float = Field(..., description="X coordinate of the bounding box")
     y: float = Field(..., description="Y coordinate of the bounding box")
     width: float = Field(..., description="Width of the bounding box")
@@ -9,6 +10,7 @@ class BoundingBox(BaseModel):
 
 
 class DetectedObject(BaseModel):
+    """Schema representing an object detected within an image."""
     label: str = Field(..., description="Label of the detected object")
     color: str | None = Field(None, description="Dominant color of the object, if relevant")
     position: str = Field(..., description="Relative position in the image, in natural language. Ex: 'top left', 'center', 'bottom right'")
@@ -17,6 +19,7 @@ class DetectedObject(BaseModel):
 
 
 class ImageDescription(BaseModel):
+    """Schema representing the overall description of an image, including its main subject, background, and detected objects."""
     main_subject: str = Field(..., description="Main subject of the image")
     background: str = Field(..., description="Background and general setting of the image")
     detected_objects: list[DetectedObject] = Field(default_factory=list, description="List of notable detected objects")
