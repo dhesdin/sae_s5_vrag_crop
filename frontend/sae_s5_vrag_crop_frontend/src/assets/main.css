@@ -1,35 +1,161 @@
 @import './base.css';
 
+
+/* Application globale */
 #app {
   max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
   font-weight: normal;
 }
 
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
+
+.window {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
 }
 
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
+.not-selected {
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* Internet Explorer / Edge ancien */
+  user-select: none;         /* Standard moderne */
 }
 
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
 
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
+
+/* Ensemble des éléments de la page */
+p {
+  color: white;
+  font-size: 32px;
+}
+
+.welcome-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 3rem;
+}
+
+/* Eléments supérieurs */
+.top-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-bottom: 5rem;
+  transition: all 1s cubic-bezier(0.77, 0, 0.175, 1)
+}
+
+.top-wrap p.hidden-top {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.top-wrap img.slide-icon {
+  transition: all 1s cubic-bezier(0.77, 0, 0.175, 1)
+}
+.top-wrap img.slide-icon {
+  width: 25%;
+  transform: translate3d(-40vw, -35vh, 0)
+}
+
+span {
+  display: inline-block;
+  color: #7E3BED;
+  transition: all .5s;
+}
+
+span:hover {
+  transform: translateY(-5px);
+  color: #C6FF34;
+}
+
+
+/* Barre de recherche */
+form {
+  display: flex;
+  transition: all 1s cubic-bezier(.77, 0, .175, 1)
+}
+
+form:has(#input-wrap.slide-down) {
+  transform: translateY(20vh);
+}
+
+
+#input-wrap {
+  position: relative;
+  width: 620px; /* Ajusté à la taille du fond pour centrer proprement */
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 1s cubic-bezier(.77, 0, .175, 1);
+}
+
+input {
+  max-width: 580px;
+  width: 490px;
+  height: 50px;
+  border-radius: 10px;
+  padding: 0 110px 0 20px; /* Espace à droite pour ne pas écrire sous le bouton */
+  border: none;
+  background: var(--color-background);
+  color: white;
+}
+
+input:focus {
+  outline: none;
+}
+
+.input {
+  position: absolute;
+}
+
+/* Bouton positionné à l'intérieur de l'input */
+form input[type="submit"] {
+  position: absolute;
+  right: 5px; /* Décale le bouton vers l'intérieur à droite */
+  width: auto;
+  height: 40px;
+  padding: 0 15px;
+  border-radius: 8px;
+  border: none;
+
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s;
+  z-index: 3; /* S'assure qu'il est cliquable au-dessus de l'input */
+}
+
+form input[type="submit"]:hover {
+  background: #6a11cb;
+}
+
+#back-input {
+  width: 620px;
+  height: 50px;
+  background: linear-gradient(to right, #C6FF34, #C6FF34, #7E3BED, #7E3BED);
+  background-size: 800% 600%;
+  filter: blur(20px);
+  animation: gradientAnimation 10s ease infinite;
+}
+
+/*********************************/
+/*         ANIMATION             */
+/*********************************/
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }

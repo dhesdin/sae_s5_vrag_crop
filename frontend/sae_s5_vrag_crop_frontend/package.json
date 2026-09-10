@@ -15,6 +15,9 @@
     "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
+    "@vue/devtools-api": "^8.2.1",
+    "bootstrap-icons": "^1.13.1",
+    "pinia": "^4.0.3",
     "vue": "^3.5.40"
   },
   "devDependencies": {

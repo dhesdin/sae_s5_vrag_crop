@@ -1,0 +1,60 @@
+.PHONY: help setup test lint format clean
+
+# 1. Détection de l'OS et configuration des chemins
+ifeq ($(OS),Windows_NT)
+    DETECTED_OS := Windows
+    PYTHON_EXE := python
+    VENV_BIN := .venv\Scripts
+    # Commande de mise à jour sécurisée pour pip sous Windows (évite le verrouillage de pip.exe)
+    PIP_UPGRADE := $(VENV_BIN)\python -m pip install --upgrade pip
+    RM_CACHE := powershell -Command "Get-ChildItem -Recurse -Filter __pycache__ | Remove-Item -Recurse -Force; Get-ChildItem -Recurse -Filter .pytest_cache | Remove-Item -Recurse -Force; Get-ChildItem -Recurse -Filter .ruff_cache | Remove-Item -Recurse -Force"
+else
+    # Linux ou macOS
+    DETECTED_OS := $(shell uname -s)
+    PYTHON_EXE := $(shell command -v python3 2>/dev/null || command -v python 2>/dev/null)
+    VENV_BIN := .venv/bin
+    PIP_UPGRADE := $(VENV_BIN)/pip install --upgrade pip
+    RM_CACHE := find . -type d \( -name "__pycache__" -o -name ".pytest_cache" -o -name ".ruff_cache" \) -exec rm -rf {} +
+endif
+
+# 2. Vérification de la présence de Python sur le système hôte
+ifeq ($(strip $(PYTHON_EXE)),)
+$(error "Python 3.10 ou supérieur est requis. Veuillez l'installer : https://python.org")
+endif
+
+help:
+	@echo "Système détecté : $(DETECTED_OS)"
+	@echo "Makefile commands:"
+	@echo "  setup 	- Set up the virtual environment and install dependencies"
+	@echo "  test	- Run unitary tests"
+	@echo "  lint 	- Run ruff check and format"
+	@echo "  clean 	- Clean up generated files and caches"
+
+setup:
+	@echo "Setting up the virtual environment on $(DETECTED_OS)..."
+	@$(PYTHON_EXE) -c "import sys ; sys.exit('Python 3.10 or higher is required. Upgrade your Python version') if sys.version_info < (3,10) else None"
+	@echo "Using Python version: $$($(PYTHON_EXE) --version 2>&1)"
+	
+	$(PYTHON_EXE) -m venv .venv
+	$(PIP_UPGRADE)
+	$(VENV_BIN)/pip install -e .[dev]
+	@echo "Setup complete. Activate the venv with:"
+	@echo "  Windows (PS) : .venv\Scripts\Activate.ps1"
+	@echo "  Linux/macOS  : source .venv/bin/activate"
+
+test: 
+	@echo "Running unit tests..."
+	$(VENV_BIN)/python -m pytest tests/ -q
+
+lint:
+	@echo "Running lint tests..."
+	$(VENV_BIN)/ruff check . && $(VENV_BIN)/ruff format --check .
+
+format: 
+	@echo "Running code formatting..."
+	$(VENV_BIN)/ruff format .
+
+clean:
+	@echo "WARNING: Cleaning caches and temporary folders..."
+	@$(RM_CACHE)
+	@echo "Clean complete."
