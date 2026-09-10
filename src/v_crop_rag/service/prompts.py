@@ -1,6 +1,5 @@
 import json
 
-
 # WARNING : IT NOT DEPENDS OF SCHEMAS.PY BE CAREFUL TO REPRODUCIBILITY
 _EXPECTED_JSON_SHAPE = json.dumps(
     {
@@ -21,8 +20,8 @@ _EXPECTED_JSON_SHAPE = json.dumps(
             }
         ],
     },
-    ensure_ascii=False, # to avoid escaping non-ASCII characters
-    indent=2, # \n and two indent per lines
+    ensure_ascii=False,  # to avoid escaping non-ASCII characters
+    indent=2,  # \n and two indent per lines
 )
 
 # Examples of valid JSON extractions from images
@@ -54,8 +53,8 @@ _JSON_EXAMPLE = json.dumps(
             },
         ],
     },
-    ensure_ascii=False, # to avoid escaping non-ASCII characters
-    indent=2, # \n and two indent per lines
+    ensure_ascii=False,  # to avoid escaping non-ASCII characters
+    indent=2,  # \n and two indent per lines
 )
 
 
