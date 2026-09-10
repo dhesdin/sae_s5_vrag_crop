@@ -1,7 +1,7 @@
 # Eleve & Introduction
 DHESDIN Valentin
 
-**Ce report à un simple but : Un journal de bord qui retrace par session :**
+**Ce rapport a un simple but : Un journal de bord qui retrace par session :**
 
 - Le contexte du travail
 - Ce qui a été fait
@@ -23,7 +23,7 @@ DHESDIN Valentin
 ---
 
 ## Séances de 09/09/2026 && 10/09/2026
-Durée: 3h00
+Durée: 7h30
 
 ### Contexte du travail
 Attribution du sujet V-CROP RAG, mise en place du repo et répartition des rôles
@@ -40,6 +40,8 @@ d'extraction structurée.
   champs obligatoires manquants, types invalides, champs optionnels)
 - Conception du prompt d'extraction VLM (instructions + forme JSON + exemple
   concret), avec tests unitaires associés
+- Ajout du loader de dataset (`loader.py`) : listing et tri des chemins
+d'images depuis dataset/, sans chargement du contenu en mémoire
 
 ### Difficultés rencontrées
 - Confusion initiale entre héritage et composition dans la conception des
@@ -59,3 +61,5 @@ d'extraction structurée.
   BoundingBox, par contre il possède optionnellement une BoundingBox - la relation
   naturelle entre elles est "contient" pas "est un type de". Je pense que ça aurait pu fonctionner via héritage en python,
   mais ce n'est pas correct.
+- Loader de dataset : pas d'utilisation de yield malgré la réflexion
+sur la scalabilité. Raison : la contrainte du projet consiste à une taille de dataset de taille minimale, le gain mémoire serait inutile dans ce contexte mais si un jour le dataset devenait très volumineux, il serait pertinent de repenser cette approche et d'utiliser un générateur avec `yield`. car yield permet de produire les éléments un par un, réduisant ainsi l'utilisation de la mémoire. (mais nécessitera de boucler sur le générateur pour l'accès aux élements).
