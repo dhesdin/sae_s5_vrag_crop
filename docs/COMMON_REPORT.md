@@ -20,6 +20,7 @@ Durée: 3h00
     - Valentin : Perception + Retrieval
     - Frédéric : Infra & données
     - Mathys : Interface et livraison
+- Mis en place d'un Kanban - https://trello.com/invite/b/6aa19eef67d49a9b73af1b6d/ATTIc2fb1fd53a4a7a2d7778fc7794d761a2695EAE08/kanbanvcroprag
 
 # Répartition des rôles
 
