@@ -2,15 +2,16 @@
 import ConversationContainer from './ConversationContainer.vue'
 import Help from './HelpCenter.vue'
 import { ref } from 'vue'
-import { useMessagesStore } from '../stores/messages.store'
 
-const messagesStore = useMessagesStore()
 const isSearch = ref<boolean>(false)
 const showConversation = ref<boolean>(false)
 const searchQuery = ref<string>('')
+import { useMessagesStore } from '../stores/messages.store'
+
+const messagesStore = useMessagesStore()
 
 const sendMessage = (message: string) => {
-  messagesStore.addMessage({ sender: '2', content: message })
+  messagesStore.addMessage({ id: Date.now(), sender: '2', content: message, time: new Date().toLocaleTimeString() })
 }
 
 const handleSearch = (e: Event) => {

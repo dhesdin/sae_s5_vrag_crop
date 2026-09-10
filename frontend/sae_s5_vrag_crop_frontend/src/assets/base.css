@@ -59,7 +59,8 @@
 }
 
 body {
-  background: var(--color-background);
+  /* From https://css.glass */
+  background: #181818;
   /* min-height: 100vh;
   color: var(--color-text);
   transition:
