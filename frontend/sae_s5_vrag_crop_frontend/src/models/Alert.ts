@@ -1,4 +1,4 @@
 export type Alert = {
-  title: string;
-  content: string;
+  title: string
+  content: string
 }
