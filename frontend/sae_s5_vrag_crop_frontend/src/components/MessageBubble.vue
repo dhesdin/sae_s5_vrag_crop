@@ -30,7 +30,6 @@ defineProps<{
   border-radius: 20px 20px 4px 20px;
   padding: 14px 18px 24px 18px;
 
-  /* Effet glassmorphism iOS (Bulles utilisateur par défaut : teinte verte) */
   background: rgba(198, 255, 52, 0.08);
   backdrop-filter: blur(25px) saturate(180%);
   -webkit-backdrop-filter: blur(25px) saturate(180%);

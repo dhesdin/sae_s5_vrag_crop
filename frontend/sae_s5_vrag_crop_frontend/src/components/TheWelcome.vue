@@ -27,7 +27,16 @@ const sendMessage = (message: string): void => {
     content: message,
     time: new Date().toLocaleTimeString(),
   }
+  console.log(sendedMessage)
   messagesStore.addMessage(sendedMessage)
+  const iaSendedMessage = {
+    id: Date.now(),
+    sender: '1',
+    content: message,
+    time: new Date().toLocaleTimeString(),
+  }
+  console.log(iaSendedMessage)
+  messagesStore.addMessage(iaSendedMessage)
 }
 
 const handleSearch = (e: Event): void => {
