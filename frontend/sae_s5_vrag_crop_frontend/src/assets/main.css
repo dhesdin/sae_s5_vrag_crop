@@ -14,6 +14,7 @@
   height: 100vh;
   justify-content: center;
   align-items: center;
+
 }
 
 .not-selected {
@@ -102,9 +103,16 @@ input {
   height: 50px;
   border-radius: 10px;
   padding: 0 110px 0 20px; /* Espace à droite pour ne pas écrire sous le bouton */
-  border: none;
-  background: var(--color-background);
+  /* From https://css.glass */
   color: white;
+/* From https://css.glass */
+/* From https://css.glass */
+background: rgba(0, 0, 0, 1);
+border-radius: 16px;
+box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+backdrop-filter: blur(6.7px);
+-webkit-backdrop-filter: blur(6.7px);
+border: 1px solid rgba(0, 0, 0, 1);
 }
 
 input:focus {

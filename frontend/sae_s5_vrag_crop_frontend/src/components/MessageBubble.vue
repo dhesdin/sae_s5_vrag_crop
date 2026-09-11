@@ -1,14 +1,15 @@
 <template>
-  <div class="message-container" :class="{ IA: sender == '1' }">
-    <p class="content">{{ content }}</p>
-    <div class="speech-bubble-tail"></div>
+  <div class="message-container" :class="{ IA: response.sender == '1' }">
+    <p class="content">{{ response.content }}</p>
+    <span id="date">{{ response.time }}</span>
   </div>
 </template>
 
 <script setup lang="ts">
+import type { ChatMessage } from '@/models/ChatMessage';
+
 defineProps<{
-  sender: string
-  content: string
+  response: ChatMessage
 }>()
 </script>
 
@@ -18,12 +19,21 @@ defineProps<{
   position: relative;
   width: 50%;
   height: auto;
-  border-radius: 10px 10px 0 10px;
+  border-radius: 16px 16px 0 16px;
   padding: 1em;
-  background: green;
+
+  background: rgba(198, 255, 52, 0.1);
+
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5.5px);
+  -webkit-backdrop-filter: blur(5.5px);
+  border: 1px solid rgba(198, 255, 52, 0.5);
   box-sizing: border-box;
   margin-left: auto;
   margin-right: 0;
+
+
+  animation: slideUpFade .7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .content {
@@ -33,28 +43,41 @@ defineProps<{
   overflow-wrap: break-word;
 }
 
-.speech-bubble-tail {
+#date {
+  font-size: 10px;
   position: absolute;
-  bottom: -10px;
-  right: 0px;
-  width: 0;
-  height: 0;
-  border-top: 15px solid green;
-  border-left: 15px solid transparent;
+  bottom: 0;
+  color: grey
 }
 
 .message-container.IA {
-  background: purple;
-  border-radius: 10px 10px 10px 0;
+  background: #7E3BED1a;
+
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5.5px);
+  -webkit-backdrop-filter: blur(5.5px);
+  border: 1px solid #7E3BED;
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: 0;
+  border-radius: 16px 16px 16px 0;
   margin-left: 0;
   margin-right: auto;
 }
 
-.message-container.IA .speech-bubble-tail {
-  right: auto;
-  left: 0px;
-  border-left: none;
-  border-right: 15px solid transparent;
-  border-top-color: purple;
+
+
+
+
+
+@keyframes slideUpFade {
+  0% {
+    opacity: 0;
+    transform: translateY(20px); /* Commence 20px plus bas */
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0); /* Remonte à sa position initiale */
+  }
 }
 </style>

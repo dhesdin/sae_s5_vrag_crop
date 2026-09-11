@@ -3,17 +3,19 @@ import ConversationContainer from './ConversationContainer.vue'
 import Help from './HelpCenter.vue'
 import { ref } from 'vue'
 import { useMessagesStore } from '../stores/messages.store'
+import PopUp from '@/components/PopUp.vue'
 
-const messagesStore = useMessagesStore()
 const isSearch = ref<boolean>(false)
 const showConversation = ref<boolean>(false)
 const searchQuery = ref<string>('')
 
-const sendMessage = (message: string) => {
-  messagesStore.addMessage({ sender: '2', content: message })
+const messagesStore = useMessagesStore()
+
+const sendMessage = (message: string) : void => {
+  messagesStore.addMessage({ id: Date.now(), sender: '2', content: message, time: new Date().toLocaleTimeString() })
 }
 
-const handleSearch = (e: Event) => {
+const handleSearch = (e: Event) : void => {
   e.preventDefault()
 
   if (!searchQuery.value.trim()) return
@@ -28,6 +30,7 @@ const handleSearch = (e: Event) => {
 
   searchQuery.value = ''
 }
+
 </script>
 
 <template>
