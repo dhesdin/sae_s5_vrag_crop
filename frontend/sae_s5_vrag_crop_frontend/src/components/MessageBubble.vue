@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ChatMessage } from '@/models/ChatMessage';
+import type { ChatMessage } from '@/models/ChatMessage'
 
 defineProps<{
   response: ChatMessage
@@ -15,7 +15,9 @@ defineProps<{
 
 <style scoped>
 * {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', Roboto,
+    sans-serif;
 }
 
 .message-container {
@@ -34,8 +36,9 @@ defineProps<{
   -webkit-backdrop-filter: blur(25px) saturate(180%);
 
   border: 1px solid rgba(198, 255, 52, 0.25);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25),
-  inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.25),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 
   box-sizing: border-box;
   margin-left: auto;
@@ -67,9 +70,10 @@ defineProps<{
 .message-container.IA {
   background: rgba(126, 59, 237, 0.12);
   border: 1px solid rgba(126, 59, 237, 0.35);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25),
-  inset 0 0 0 1px rgba(255, 255, 255, 0.05),
-  0 0 15px rgba(126, 59, 237, 0.1);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.25),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+    0 0 15px rgba(126, 59, 237, 0.1);
   border-radius: 20px 20px 20px 4px;
   margin-left: 0;
   margin-right: auto;

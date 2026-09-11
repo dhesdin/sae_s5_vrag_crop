@@ -5,7 +5,7 @@ import { useMessagesStore } from '../stores/messages.store'
 
 /* Import des models */
 import type { Alert } from '@/models/Alert'
-import type {ChatMessage} from "@/models/ChatMessage.ts";
+import type { ChatMessage } from '@/models/ChatMessage.ts'
 
 /* Import des components */
 import AlertComponent from '@/components/AlertComponent.vue'
@@ -20,19 +20,17 @@ const showAlert = ref<boolean>(true)
 
 const searchQuery = ref<string>('')
 
-
-const sendMessage = (message: string) : void => {
-  const sendedMessage : ChatMessage = {
+const sendMessage = (message: string): void => {
+  const sendedMessage: ChatMessage = {
     id: Date.now(),
     sender: '2',
     content: message,
-    time: new Date().toLocaleTimeString()
+    time: new Date().toLocaleTimeString(),
   }
   messagesStore.addMessage(sendedMessage)
 }
 
-
-const handleSearch = (e: Event) : void => {
+const handleSearch = (e: Event): void => {
   e.preventDefault()
 
   if (!searchQuery.value.trim()) return
@@ -48,11 +46,10 @@ const handleSearch = (e: Event) : void => {
   searchQuery.value = ''
 }
 
-const AlertTest : Alert = {
-  title: "Test",
-  content: "Je suis une alert"
+const AlertTest: Alert = {
+  title: 'Test',
+  content: 'Je suis une alert',
 }
-
 </script>
 
 <template>
@@ -67,12 +64,12 @@ const AlertTest : Alert = {
 
       <form @submit="handleSearch">
         <div id="input-wrap" :class="{ 'slide-down': isSearch }">
-          <div class="input" id="back-input"></div>
+          <div id="back-input" class="input"></div>
           <input
-            class="input"
             id="input-search"
-            type="text"
             v-model="searchQuery"
+            class="input"
+            type="text"
             placeholder="Décrivez votre recherche..."
           />
           <input type="submit" value="Rechercher" />

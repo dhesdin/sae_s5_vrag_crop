@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { Alert } from '@/models/Alert.ts';
-import { onMounted, onUnmounted } from 'vue';
+import type { Alert } from '@/models/Alert.ts'
+import { onMounted, onUnmounted } from 'vue'
 
-const props = defineProps<{
+defineProps<{
   message: Alert
 }>()
 
@@ -36,18 +36,20 @@ const closeAlert = () => {
       <div class="popup-header">
         <div class="header-left">
           <span class="popup-dot"></span>
-          <p class="alert-item" id="title">{{ message.title }}</p>
+          <p id="title" class="alert-item">{{ message.title }}</p>
         </div>
-        <button class="close-btn" @click="closeAlert" aria-label="Fermer">×</button>
+        <button class="close-btn" aria-label="Fermer" @click="closeAlert">×</button>
       </div>
-      <p class="alert-item" id="text">{{ message.content }}</p>
+      <p id="text" class="alert-item">{{ message.content }}</p>
     </div>
   </div>
 </template>
 
 <style scoped lang="css">
 * {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', Roboto,
+    sans-serif;
 }
 
 #popup {
@@ -61,9 +63,10 @@ const closeAlert = () => {
   backdrop-filter: blur(25px) saturate(180%);
   -webkit-backdrop-filter: blur(25px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6),
-  inset 0 0 0 1px rgba(255, 255, 255, 0.05),
-  0 0 25px rgba(126, 59, 237, 0.2);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+    0 0 25px rgba(126, 59, 237, 0.2);
   overflow: hidden;
   animation: slideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -71,8 +74,8 @@ const closeAlert = () => {
 .popup-glow {
   height: 2px;
   width: 100%;
-  background: linear-gradient(90deg, #7E3BED, #C6FF34);
-  box-shadow: 0 0 10px #C6FF34;
+  background: linear-gradient(90deg, #7e3bed, #c6ff34);
+  box-shadow: 0 0 10px #c6ff34;
 }
 
 .popup-content {
@@ -97,9 +100,11 @@ const closeAlert = () => {
 .popup-dot {
   width: 7px;
   height: 7px;
-  background-color: #C6FF34;
+  background-color: #c6ff34;
   border-radius: 50%;
-  box-shadow: 0 0 10px #C6FF34, 0 0 4px #7E3BED;
+  box-shadow:
+    0 0 10px #c6ff34,
+    0 0 4px #7e3bed;
 }
 
 #title {
