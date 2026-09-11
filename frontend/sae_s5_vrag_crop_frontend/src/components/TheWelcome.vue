@@ -1,19 +1,36 @@
 <script setup lang="ts">
-import ConversationContainer from './ConversationContainer.vue'
-import Help from './HelpCenter.vue'
 import { ref } from 'vue'
-import { useMessagesStore } from '../stores/messages.store'
-import PopUp from '@/components/PopUp.vue'
 
-const isSearch = ref<boolean>(false)
-const showConversation = ref<boolean>(false)
-const searchQuery = ref<string>('')
+import { useMessagesStore } from '../stores/messages.store'
+
+/* Import des models */
+import type { Alert } from '@/models/Alert'
+import type {ChatMessage} from "@/models/ChatMessage.ts";
+
+/* Import des components */
+import AlertComponent from '@/components/AlertComponent.vue'
+import ConversationContainer from '@/components/ConversationContainer.vue'
+import Help from '@/components/HelpCenter.vue'
 
 const messagesStore = useMessagesStore()
 
+const isSearch = ref<boolean>(false)
+const showConversation = ref<boolean>(false)
+const showAlert = ref<boolean>(true)
+
+const searchQuery = ref<string>('')
+
+
 const sendMessage = (message: string) : void => {
-  messagesStore.addMessage({ id: Date.now(), sender: '2', content: message, time: new Date().toLocaleTimeString() })
+  const sendedMessage : ChatMessage = {
+    id: Date.now(),
+    sender: '2',
+    content: message,
+    time: new Date().toLocaleTimeString()
+  }
+  messagesStore.addMessage(sendedMessage)
 }
+
 
 const handleSearch = (e: Event) : void => {
   e.preventDefault()
@@ -29,6 +46,11 @@ const handleSearch = (e: Event) : void => {
   sendMessage(searchQuery.value)
 
   searchQuery.value = ''
+}
+
+const AlertTest : Alert = {
+  title: "Test",
+  content: "Je suis une alert"
 }
 
 </script>
@@ -63,6 +85,7 @@ const handleSearch = (e: Event) : void => {
       :class="{ 'show-conversation': showConversation }"
     />
 
+    <AlertComponent v-if="showAlert" :message="AlertTest" @close="showAlert = false" />
     <Help />
   </div>
 </template>
