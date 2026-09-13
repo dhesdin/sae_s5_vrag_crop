@@ -31,3 +31,8 @@ Durée: 3h00
 | **Ce qu'il livre à qui** | À **Bloc C** : le format de sortie JSON | À **Bloc A** : les interfaces (classe abstraite) des modèles avec fonction && signatures des méthodes | Rien en aval - bout de chaîne |
 | **Ne touche jamais** | Le code du wrapper Ollama, la config Docker, le storage bas niveau (ChromaDB direct) | Le contenu du schéma JSON, le prompt VLM, la logique de ranking/filtrage | La logique d'extraction VLM, le contenu du wrapper Ollama |
 
+# Séances du 09/09/26
+Durée: 3h00
+
+- point d'avancement avec mise en commun des tâches à effectuer et compréhension du sujet
+- développements et recherches individuels 
