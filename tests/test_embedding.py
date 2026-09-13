@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import create_autospec
 
 import pytest
 
@@ -7,7 +7,7 @@ from v_crop_rag.ollama_client.ollama_wrapper_iut import OllamaWrapper
 
 
 def test_embed_returns_vector():
-    client = Mock(spec=OllamaWrapper)
+    client = create_autospec(OllamaWrapper, instance = True)
 
     expected_vector = [0.1, 0.2, -0.3]
 
@@ -22,21 +22,21 @@ def test_embed_returns_vector():
 
 
 def test_model_must_be_string():
-    client = Mock(spec=OllamaWrapper)
+    client = create_autospec(OllamaWrapper, instance = True)
 
     with pytest.raises(TypeError):
         OllamaEmbedding(client=client, model=123)
 
 
 def test_model_must_not_be_empty():
-    client = Mock(spec=OllamaWrapper)
+    client = create_autospec(OllamaWrapper, instance = True)
 
     with pytest.raises(ValueError):
         OllamaEmbedding(client=client, model="  ")
 
 
 def test_text_must_be_string():
-    client = Mock(spec=OllamaWrapper)
+    client = create_autospec(OllamaWrapper, instance = True)
     embedding = OllamaEmbedding(client=client, model="embeddinggemma")
 
     with pytest.raises(TypeError):
@@ -44,7 +44,7 @@ def test_text_must_be_string():
 
 
 def test_text_must_not_be_empty():
-    client = Mock(spec=OllamaWrapper)
+    client = create_autospec(OllamaWrapper, instance = True)
     embedding = OllamaEmbedding(client=client, model="embeddinggemma")
 
     with pytest.raises(ValueError):

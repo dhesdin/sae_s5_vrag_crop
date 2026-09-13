@@ -1,5 +1,5 @@
 from pathlib import Path
-from unittest.mock import Mock
+from unittest.mock import create_autospec
 
 import pytest
 
@@ -8,7 +8,7 @@ from v_crop_rag.ollama_client.vlm import OllamaVLM
 
 
 def test_generate_returns_vlm_response():
-    client = Mock(spec=OllamaWrapper)  # Create a mock of ollamaWrapper
+    client = create_autospec(OllamaWrapper, instance = True)
 
     client.generate_with_image.return_value = OllamaGenerateResult(response="Description de l'image")  # dont contact Ollama & return this response
 
@@ -23,21 +23,21 @@ def test_generate_returns_vlm_response():
 
 
 def test_model_must_be_string():
-    client = Mock(spec=OllamaWrapper)
+    client = create_autospec(OllamaWrapper, instance = True)
 
     with pytest.raises(TypeError):
         OllamaVLM(client=client, model=123)
 
 
 def test_model_must_not_be_empty():
-    client = Mock(spec=OllamaWrapper)
+    client = create_autospec(OllamaWrapper, instance = True)
 
     with pytest.raises(ValueError):
         OllamaVLM(client=client, model="   ")
 
 
 def test_prompt_must_be_string():
-    client = Mock(spec=OllamaWrapper)
+    client = create_autospec(OllamaWrapper, instance = True)
     vlm = OllamaVLM(client=client, model="qwen3-vl:instruct")
 
     with pytest.raises(TypeError):
@@ -45,7 +45,7 @@ def test_prompt_must_be_string():
 
 
 def test_prompt_must_not_be_empty():
-    client = Mock(spec=OllamaWrapper)
+    client = create_autospec(OllamaWrapper, instance = True)
     vlm = OllamaVLM(client=client, model="qwen3-vl:instruct")
 
     with pytest.raises(ValueError):
@@ -53,7 +53,7 @@ def test_prompt_must_not_be_empty():
 
 
 def test_image_must_be_supported():
-    client = Mock(spec=OllamaWrapper)
+    client = create_autospec(OllamaWrapper, instance = True)
     vlm = OllamaVLM(client=client, model="qwen3-vl:instruct")
 
     with pytest.raises(TypeError):
