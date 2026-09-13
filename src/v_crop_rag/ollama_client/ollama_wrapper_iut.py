@@ -1,7 +1,3 @@
-
-# ------------------------------
-# Exceptions spécifiques (pédagogie + robustesse)
-# ------------------------------
 from __future__ import annotations  # Permet les annotations de types en avant-référence (Python < 3.11)
 
 import base64  # Encodage base64 requis pour envoyer des images à /api/generate
@@ -12,12 +8,12 @@ import subprocess  # Pour lancer "ollama serve"
 import time  # Pour boucler avec un timeout lors du démarrage serveur
 from dataclasses import dataclass  # Modèles de données simples et typés
 from pathlib import Path  # Manipulation robuste des chemins
-from typing import Any, Dict, List, Mapping, Optional, Sequence, Union  # Types
-
+from typing import Any, Dict, List, Mapping, Optional, Union  # Types
 
 # ------------------------------
 # Exceptions spécifiques (pédagogie + robustesse)
 # ------------------------------
+
 
 class OllamaError(RuntimeError):
     """Erreur générique pour les opérations Ollama."""
@@ -39,9 +35,11 @@ class OllamaServerStartError(OllamaError):
 # Dataclasses pour structurer les réponses (lisible + typé)
 # ------------------------------
 
+
 @dataclass(frozen=True, slots=True)
 class OllamaModelDetails:
     """Détails d'un modèle, tels que renvoyés dans /api/tags."""
+
     format: Optional[str] = None
     family: Optional[str] = None
     families: Optional[List[str]] = None
@@ -52,6 +50,7 @@ class OllamaModelDetails:
 @dataclass(frozen=True, slots=True)
 class OllamaModelInfo:
     """Informations de base sur un modèle installé (issu de /api/tags)."""
+
     name: str
     modified_at: Optional[str] = None
     size: Optional[int] = None
@@ -62,6 +61,7 @@ class OllamaModelInfo:
 @dataclass(frozen=True, slots=True)
 class OllamaGenerateResult:
     """Résultat simplifié de /api/generate en mode stream=false."""
+
     response: str
     model: Optional[str] = None
     done: Optional[bool] = None
@@ -74,6 +74,7 @@ class OllamaGenerateResult:
 # ------------------------------
 # Wrapper principal
 # ------------------------------
+
 
 class OllamaWrapper:
     """
@@ -90,7 +91,7 @@ class OllamaWrapper:
     # Constructeur : on fixe l'hôte/timeout et on prépare des valeurs par défaut.
     def __init__(
         self,
-        #base_url: str = "http://10.22.28.190:11434",
+        # base_url: str = "http://10.22.28.190:11434",
         base_url: str = "http://10.22.28.190:11434",
         timeout_s: float = 60.0,
     ) -> None:
@@ -140,9 +141,7 @@ class OllamaWrapper:
         # Vérifie que l'exécutable "ollama" est présent dans le PATH.
         ollama_path: Optional[str] = shutil.which("ollama")
         if ollama_path is None:
-            raise OllamaServerStartError(
-                "Exécutable 'ollama' introuvable. Installe Ollama et/ou ajoute-le au PATH."
-            )
+            raise OllamaServerStartError("Exécutable 'ollama' introuvable. Installe Ollama et/ou ajoute-le au PATH.")
 
         # Prépare l'environnement du processus.
         env: Dict[str, str] = dict(**(extra_env or {}))  # Copie défensive
@@ -169,16 +168,11 @@ class OllamaWrapper:
             if process.poll() is not None:
                 # Process terminé -> on récupère stderr pour diagnostic.
                 stderr: bytes = process.stderr.read() if process.stderr else b""
-                raise OllamaServerStartError(
-                    "Le serveur Ollama s'est arrêté pendant le démarrage.\n"
-                    f"stderr:\n{stderr.decode(errors='replace')}"
-                )
+                raise OllamaServerStartError(f"Le serveur Ollama s'est arrêté pendant le démarrage.\nstderr:\n{stderr.decode(errors='replace')}")
             time.sleep(0.1)  # Petite attente avant de retester
 
         # Timeout : serveur non accessible à temps.
-        raise OllamaServerStartError(
-            f"Le serveur Ollama ne répond pas après {wait_timeout_s:.1f}s."
-        )
+        raise OllamaServerStartError(f"Le serveur Ollama ne répond pas après {wait_timeout_s:.1f}s.")
 
     def _is_port_open(self) -> bool:
         """
@@ -199,9 +193,9 @@ class OllamaWrapper:
         # (pédagogiquement : clair ; production : on pourrait utiliser urllib.parse).
         url: str = self._base_url
         if url.startswith("http://"):
-            url = url[len("http://"):]
+            url = url[len("http://") :]
         elif url.startswith("https://"):
-            url = url[len("https://"):]
+            url = url[len("https://") :]
         # Si pas de port explicite, Ollama utilise 11434.
         if ":" in url:
             host, port_str = url.split(":", 1)
@@ -291,9 +285,9 @@ class OllamaWrapper:
             OllamaGenerateResult : réponse texte + quelques métriques si présentes.
         """
         body: Dict[str, Any] = {
-            "model": model,       # Modèle ciblé
-            "prompt": prompt,     # Prompt texte
-            "stream": False,      # On veut une réponse complète en une fois
+            "model": model,  # Modèle ciblé
+            "prompt": prompt,  # Prompt texte
+            "stream": False,  # On veut une réponse complète en une fois
         }
 
         # Ajoute le système si fourni.
@@ -360,10 +354,10 @@ class OllamaWrapper:
         image_b64: str = base64.b64encode(image_bytes).decode("ascii")
 
         body: Dict[str, Any] = {
-            "model": model,           # Modèle multimodal
-            "prompt": prompt,         # Prompt
-            "images": [image_b64],    # Liste base64 (même pour une seule image)
-            "stream": False,          # Réponse complète
+            "model": model,  # Modèle multimodal
+            "prompt": prompt,  # Prompt
+            "images": [image_b64],  # Liste base64 (même pour une seule image)
+            "stream": False,  # Réponse complète
         }
 
         # Ajoute le système si fourni.
@@ -451,8 +445,8 @@ class OllamaWrapper:
 
         # Prépare les headers.
         headers: Dict[str, str] = {
-            "Accept": "application/json",            # On attend du JSON
-            "Content-Type": "application/json",      # Si body présent
+            "Accept": "application/json",  # On attend du JSON
+            "Content-Type": "application/json",  # Si body présent
         }
 
         # Sérialise le body en JSON si nécessaire.
@@ -488,9 +482,7 @@ class OllamaWrapper:
         try:
             payload = json.loads(text)
         except json.JSONDecodeError as e:
-            raise OllamaResponseError(
-                f"Réponse non-JSON depuis {url} (début): {text[:200]!r}"
-            ) from e
+            raise OllamaResponseError(f"Réponse non-JSON depuis {url} (début): {text[:200]!r}") from e
 
         # On attend un dict JSON.
         if not isinstance(payload, dict):
