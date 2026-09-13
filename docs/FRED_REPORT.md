@@ -12,5 +12,6 @@
 - Insertion du fichier ollama_wrapper_iut.py
 - Création des interfaces BaseVLM et BaseEmbedding
 - Création des adaptateurs OllamaVLM et OllamaEmbedding + tests
+- MAJ du monitoring (Sprint 00)
 
 
