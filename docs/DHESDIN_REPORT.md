@@ -1,4 +1,5 @@
 # Eleve & Introduction
+
 DHESDIN Valentin
 
 **Ce rapport a un simple but : Un journal de bord qui retrace par session :**
@@ -23,15 +24,18 @@ DHESDIN Valentin
 ---
 
 ## Séances de 09/09/2026 && 10/09/2026
+
 Durée: 7h30
 
 ### Contexte du travail
+
 Attribution du sujet V-CROP RAG, mise en place du repo et répartition des rôles
 en groupe de 3 (Bloc A - perception/retrieval, Bloc B - infra/données, Bloc C -
 interface/livraison). Début de mon périmètre (Bloc A) : conception du schéma
 d'extraction structurée.
 
 ### Ce qui a été fait
+
 - Bootstrap du repo (structure src/, pyproject.toml, CI en stub, Makefile)
 - Définition du schéma Pydantic (ImageDescription, DetectedObject, BoundingBox)
   à partir du sujet (plan principal / décor / objets+attributs) à ce stade c'est une première version
@@ -41,15 +45,17 @@ d'extraction structurée.
 - Conception du prompt d'extraction VLM (instructions + forme JSON + exemple
   concret), avec tests unitaires associés
 - Ajout du loader de dataset (`loader.py`) : listing et tri des chemins
-d'images depuis dataset/, sans chargement du contenu en mémoire
+  d'images depuis dataset/, sans chargement du contenu en mémoire
 
 ### Difficultés rencontrées
+
 - Confusion initiale entre héritage et composition dans la conception des
   classes Pydantic imbriquées (jamais utilisé Pydantic auparavant)
 - Piège Python des valeurs par défaut mutables (liste vide comme
   défaut) - nécessité d'utiliser default_factory pour déclarer correctement une liste propre à un objet.
 
 ### Décisions techniques
+
 - Gabarit JSON du prompt : écrit à la main plutôt que généré dynamiquement
   depuis le schéma Pydantic. Raison : automatiser
   aurait demandé une fonction récursive pour peu de gain
@@ -62,4 +68,44 @@ d'images depuis dataset/, sans chargement du contenu en mémoire
   naturelle entre elles est "contient" pas "est un type de". Je pense que ça aurait pu fonctionner via héritage en python,
   mais ce n'est pas correct.
 - Loader de dataset : pas d'utilisation de yield malgré la réflexion
-sur la scalabilité. Raison : la contrainte du projet consiste à une taille de dataset de taille minimale, le gain mémoire serait inutile dans ce contexte mais si un jour le dataset devenait très volumineux, il serait pertinent de repenser cette approche et d'utiliser un générateur avec `yield`. car yield permet de produire les éléments un par un, réduisant ainsi l'utilisation de la mémoire. (mais nécessitera de boucler sur le générateur pour l'accès aux élements).
+  sur la scalabilité. Raison : la contrainte du projet consiste à une taille de dataset de taille minimale, le gain mémoire serait inutile dans ce contexte mais si un jour le dataset devenait très volumineux, il serait pertinent de repenser cette approche et d'utiliser un générateur avec `yield`. car yield permet de produire les éléments un par un, réduisant ainsi l'utilisation de la mémoire. (mais nécessitera de boucler sur le générateur pour l'accès aux élements).
+
+---
+
+## Séance du 14/09/2026
+
+Durée: 1h
+
+### Contexte du travail
+
+Suite au rapport de suivi automatique du 13/09/2026, deux écarts relevés sur mon
+périmètre (Bloc A) : le `BoundingBox` du schéma n'était pas borné (aucune contrainte
+sur x/y/width/height), et le prompt (`service/prompts.py`) et le schéma
+(`service/schemas.py`) sont dupliqués sans garde-fou vérifiant leur cohérence.
+
+### Ce qui a été fait
+
+- Ajout de contraintes sur `BoundingBox` (`service/schemas.py`) : `x`/`y` bornés à
+  `>= 0`, `width`/`height` bornés à `> 0`. Le prompt (`_JSON_EXAMPLE` dans
+  `prompts.py`) exprime le bounding box en pixels absolus (ex: `x=120, y=80`), pas en
+  coordonnées normalisées
+- Complément des tests dans `tests/test_schemas.py` : coordonnées négatives
+  rejetées, largeur/hauteur nulles ou négatives rejetées, `x=0`/`y=0` acceptés.
+- Ajout d'un test de cohérence prompt <-> schéma
+  (`tests/test_prompt.py::test_json_example_matches_schema_recursively`) qui
+  compare, récursivement, les clés de `_JSON_EXAMPLE` aux champs de
+  `ImageDescription`, `DetectedObject` et `BoundingBox` via `model_fields.keys()`.
+
+### Difficultés rencontrées
+
+- Aucune difficulté technique notable : les deux ajouts sont triviaux
+
+### Décisions techniques
+
+- Je n'ai pas mis de limite haute sur x/y/width/height : le schéma BoundingBox n'a aucun moyen de savoir si les coordonnées dépassent l'image, puisqu'il ne connaît pas sa taille. Cette vérification devra être faite plus tard, dans le code métier, au moment où on aura à la fois l'image et son bounding box sous la main.
+- Le choix, documenté dans la séance du 09-10/09/2026, d'écrire le gabarit JSON du
+  prompt à la main plutôt que de le générer dynamiquement depuis `schemas.py` était
+  un risque assumé de divergence entre les deux fichiers. Plutôt que de revenir sur
+  ce choix (génération dynamique jugée disproportionnée pour la taille actuelle du
+  schéma), j'ai ajouté un test de cohérence qui compare les clés de l'exemple du
+  prompt à celles du schéma. Ce test transforme ce risque silencieux : ça à été relevé dans le rapport de suivi automatique du 13/09/2026 ("prompt et schéma dupliqués"). Donc un garde-fou vérifié en CI : dorénavant, toute modification du schéma sans mise à jour de l'exemple (ou inversement) fait échouer les tests.
