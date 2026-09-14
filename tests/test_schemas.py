@@ -107,3 +107,42 @@ def test_detected_object_with_bounding_box():
 def test_bounding_box_wrong_type_raises():
     with pytest.raises(ValidationError):
         BoundingBox(x="dix", y=20, width=100, height=50)  # x should be a number
+
+
+# --- BoundingBox : absolute pixel, non-negative coordinates and positive dimensions ---
+
+
+def test_bounding_box_negative_x_raises():
+    with pytest.raises(ValidationError):
+        BoundingBox(x=-1, y=20, width=100, height=50)
+
+
+def test_bounding_box_negative_y_raises():
+    with pytest.raises(ValidationError):
+        BoundingBox(x=10, y=-20, width=100, height=50)
+
+
+def test_bounding_box_zero_width_raises():
+    with pytest.raises(ValidationError):
+        BoundingBox(x=10, y=20, width=0, height=50)
+
+
+def test_bounding_box_negative_width_raises():
+    with pytest.raises(ValidationError):
+        BoundingBox(x=10, y=20, width=-100, height=50)
+
+
+def test_bounding_box_zero_height_raises():
+    with pytest.raises(ValidationError):
+        BoundingBox(x=10, y=20, width=100, height=0)
+
+
+def test_bounding_box_negative_height_raises():
+    with pytest.raises(ValidationError):
+        BoundingBox(x=10, y=20, width=100, height=-50)
+
+
+def test_bounding_box_zero_x_and_y_allowed():
+    bbox = BoundingBox(x=0, y=0, width=100, height=50)
+    assert bbox.x == 0
+    assert bbox.y == 0
