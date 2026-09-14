@@ -2,12 +2,13 @@ from pydantic import BaseModel, Field
 
 
 class BoundingBox(BaseModel):
-    """Schema representing a bounding box around a detected object."""
+    """Schema representing a bounding box around a detected object.
+    Coordinates in absolute pixels. The upper bound (staying within the image limits) cannot be verified here."""
 
-    x: float = Field(..., description="X coordinate of the bounding box")
-    y: float = Field(..., description="Y coordinate of the bounding box")
-    width: float = Field(..., description="Width of the bounding box")
-    height: float = Field(..., description="Height of the bounding box")
+    x: float = Field(..., ge=0, description="X coordinate of the bounding box")
+    y: float = Field(..., ge=0, description="Y coordinate of the bounding box")
+    width: float = Field(..., gt=0, description="Width of the bounding box")
+    height: float = Field(..., gt=0, description="Height of the bounding box")
 
 
 class DetectedObject(BaseModel):
