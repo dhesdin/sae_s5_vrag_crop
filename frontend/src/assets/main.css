@@ -1,12 +1,10 @@
 @import './base.css';
 
-
 /* Application globale */
 #app {
   max-width: 1280px;
   font-weight: normal;
 }
-
 
 .window {
   display: flex;
@@ -18,12 +16,10 @@
 
 .not-selected {
   -webkit-user-select: none; /* Safari */
-  -moz-user-select: none;    /* Firefox */
-  -ms-user-select: none;     /* Internet Explorer / Edge ancien */
-  user-select: none;         /* Standard moderne */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer / Edge ancien */
+  user-select: none; /* Standard moderne */
 }
-
-
 
 /* Ensemble des éléments de la page */
 p {
@@ -47,7 +43,7 @@ p {
   justify-content: center;
   flex-direction: column;
   margin-bottom: 5rem;
-  transition: all 1s cubic-bezier(0.77, 0, 0.175, 1)
+  transition: all 1s cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 .top-wrap p.hidden-top {
@@ -56,35 +52,33 @@ p {
 }
 
 .top-wrap img.slide-icon {
-  transition: all 1s cubic-bezier(0.77, 0, 0.175, 1)
+  transition: all 1s cubic-bezier(0.77, 0, 0.175, 1);
 }
 .top-wrap img.slide-icon {
   width: 25%;
-  transform: translate3d(-40vw, -35vh, 0)
+  transform: translate3d(-40vw, -35vh, 0);
 }
 
 span {
   display: inline-block;
-  color: #7E3BED;
-  transition: all .5s;
+  color: #7e3bed;
+  transition: all 0.5s;
 }
 
 span:hover {
   transform: translateY(-5px);
-  color: #C6FF34;
+  color: #c6ff34;
 }
-
 
 /* Barre de recherche */
 form {
   display: flex;
-  transition: all 1s cubic-bezier(.77, 0, .175, 1)
+  transition: all 1s cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 form:has(#input-wrap.slide-down) {
   transform: translateY(20vh);
 }
-
 
 #input-wrap {
   position: relative;
@@ -93,7 +87,7 @@ form:has(#input-wrap.slide-down) {
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: all 1s cubic-bezier(.77, 0, .175, 1);
+  transition: all 1s cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 input {
@@ -102,9 +96,16 @@ input {
   height: 50px;
   border-radius: 10px;
   padding: 0 110px 0 20px; /* Espace à droite pour ne pas écrire sous le bouton */
-  border: none;
-  background: var(--color-background);
+  /* From https://css.glass */
   color: white;
+  /* From https://css.glass */
+  /* From https://css.glass */
+  background: rgba(0, 0, 0, 1);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(6.7px);
+  -webkit-backdrop-filter: blur(6.7px);
+  border: 1px solid rgba(0, 0, 0, 1);
 }
 
 input:focus {
@@ -116,7 +117,7 @@ input:focus {
 }
 
 /* Bouton positionné à l'intérieur de l'input */
-form input[type="submit"] {
+form input[type='submit'] {
   position: absolute;
   right: 5px; /* Décale le bouton vers l'intérieur à droite */
   width: auto;
@@ -131,14 +132,14 @@ form input[type="submit"] {
   z-index: 3; /* S'assure qu'il est cliquable au-dessus de l'input */
 }
 
-form input[type="submit"]:hover {
+form input[type='submit']:hover {
   background: #6a11cb;
 }
 
 #back-input {
   width: 620px;
   height: 50px;
-  background: linear-gradient(to right, #C6FF34, #C6FF34, #7E3BED, #7E3BED);
+  background: linear-gradient(to right, #c6ff34, #c6ff34, #7e3bed, #7e3bed);
   background-size: 800% 600%;
   filter: blur(20px);
   animation: gradientAnimation 10s ease infinite;

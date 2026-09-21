@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,300..800;1,300..800&display=swap');
+
 /* color palette from <https://github.com/vuejs/theme> */
 :root {
   --vt-c-white: #ffffff;
@@ -59,7 +61,8 @@
 }
 
 body {
-  background: var(--color-background);
+  font-family: 'Host Grotesk', sans-serif;
+  background: #181818;
   /* min-height: 100vh;
   color: var(--color-text);
   transition:
