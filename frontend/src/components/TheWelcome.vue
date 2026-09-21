@@ -2,7 +2,7 @@
 import ConversationContainer from './ConversationContainer.vue'
 import Help from './HelpCenter.vue'
 import { ref } from 'vue'
-import { useMessagesStore } from '../stores/messages.store'
+import { useMessagesStore } from '../stores/messages.store.ts'
 
 const messagesStore = useMessagesStore()
 const isSearch = ref<boolean>(false)
