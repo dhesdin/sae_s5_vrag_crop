@@ -1,3 +1,9 @@
+<template>
+  <div class="conversation-container">
+    <MessageBubble v-for="m in messages" :key="m.id" :response="m" />
+  </div>
+</template>
+
 <script lang="ts" setup>
 import MessageBubble from './MessageBubble.vue'
 import { storeToRefs } from 'pinia'
@@ -9,13 +15,10 @@ const { messages } = storeToRefs(messagesStore)
 //   { id: 1, sender: "1", content: "Hello, how can I help you?", time: new Date() },
 //   { id: 2, sender: "2", content: "I need assistance with my order.", time: new Date() }
 // ]
-</script>
 
-<template>
-  <div class="conversation-container">
-    <MessageBubble v-for="m in messages" :key="m.id" :response="m" />
-  </div>
-</template>
+
+
+</script>
 
 <style lang="css" scoped>
 .conversation-container {
@@ -26,4 +29,6 @@ const { messages } = storeToRefs(messagesStore)
   height: 80%;
   position: absolute;
 }
+
+
 </style>

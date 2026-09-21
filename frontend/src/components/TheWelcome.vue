@@ -1,40 +1,20 @@
 <script setup lang="ts">
+import ConversationContainer from './ConversationContainer.vue'
+import Help from './HelpCenter.vue'
 import { ref } from 'vue'
-<<<<<<< HEAD:frontend/src/components/TheWelcome.vue
-import { useMessagesStore } from '../stores/messages.store.ts'
-=======
-
-import { useMessagesStore } from '../stores/messages.store'
->>>>>>> d6dec40e4734db395aada0b78ba4f9cbfcfb6a6b:frontend/sae_s5_vrag_crop_frontend/src/components/TheWelcome.vue
-
-/* Import des models */
-import type { Alert } from '@/models/Alert'
-import type { ChatMessage } from '@/models/ChatMessage.ts'
-
-/* Import des components */
-import AlertComponent from '@/components/AlertComponent.vue'
-import ConversationContainer from '@/components/ConversationContainer.vue'
-import Help from '@/components/HelpCenter.vue'
-
-const messagesStore = useMessagesStore()
 
 const isSearch = ref<boolean>(false)
 const showConversation = ref<boolean>(false)
-const showAlert = ref<boolean>(true)
-
 const searchQuery = ref<string>('')
+import { useMessagesStore } from '../stores/messages.store'
 
-const sendMessage = (message: string): void => {
-  const sendedMessage: ChatMessage = {
-    id: Date.now(),
-    sender: '2',
-    content: message,
-    time: new Date().toLocaleTimeString(),
-  }
-  messagesStore.addMessage(sendedMessage)
+const messagesStore = useMessagesStore()
+
+const sendMessage = (message: string) => {
+  messagesStore.addMessage({ id: Date.now(), sender: '2', content: message, time: new Date().toLocaleTimeString() })
 }
 
-const handleSearch = (e: Event): void => {
+const handleSearch = (e: Event) => {
   e.preventDefault()
 
   if (!searchQuery.value.trim()) return
@@ -48,11 +28,6 @@ const handleSearch = (e: Event): void => {
   sendMessage(searchQuery.value)
 
   searchQuery.value = ''
-}
-
-const AlertTest: Alert = {
-  title: 'Test',
-  content: 'Je suis une alert',
 }
 </script>
 
@@ -68,12 +43,12 @@ const AlertTest: Alert = {
 
       <form @submit="handleSearch">
         <div id="input-wrap" :class="{ 'slide-down': isSearch }">
-          <div id="back-input" class="input"></div>
+          <div class="input" id="back-input"></div>
           <input
-            id="input-search"
-            v-model="searchQuery"
             class="input"
+            id="input-search"
             type="text"
+            v-model="searchQuery"
             placeholder="Décrivez votre recherche..."
           />
           <input type="submit" value="Rechercher" />
@@ -86,7 +61,6 @@ const AlertTest: Alert = {
       :class="{ 'show-conversation': showConversation }"
     />
 
-    <AlertComponent v-if="showAlert" :message="AlertTest" @close="showAlert = false" />
     <Help />
   </div>
 </template>

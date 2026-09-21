@@ -1,14 +1,19 @@
 <!-- filename: documentation.vue -->
 
 <template>
-  <a href="https://github.com/dhesdin/sae_s5_vrag_crop" target="_blank">
-    <div class="circle">
-      <p>?</p>
-    </div>
-  </a>
+
+<a href="https://github.com/dhesdin/sae_s5_vrag_crop" target="_blank">
+  <div class="circle">
+    <p>?</p>
+  </div>
+</a>
+
 </template>
 
+
+
 <style lang="css">
+
 .circle {
   position: absolute;
   right: 1.5rem;
@@ -20,7 +25,7 @@
   align-items: center;
   justify-content: center;
   border: 1px solid white;
-  transition: all 0.5s;
+  transition: all .5s;
 }
 
 .circle:hover {
@@ -29,4 +34,5 @@
   transform: translateY(-5px);
   /* box-shadow: white 0px 20px 30px -10px; */
 }
+
 </style>
