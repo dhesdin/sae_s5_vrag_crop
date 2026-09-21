@@ -1,0 +1,29 @@
+site_name: V-CROP RAG — Documentation
+site_url: https://dhesdin.github.io/sae_s5_vrag_crop/
+docs_dir: documentation
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      toggle: {icon: material/brightness-7, name: Mode sombre}
+    - scheme: slate
+      toggle: {icon: material/brightness-4, name: Mode clair}
+  features:
+    - navigation.tabs
+    - search.suggest
+
+nav:
+  - Documentation Utilisateur:
+      - Installation & lancement: utilisateur/installation.md
+      - Indexer un dossier d'images: utilisateur/indexation.md
+      - Rechercher une image: utilisateur/recherche.md
+      - Comprendre un résultat: utilisateur/resultats.md
+      - FAQ / erreurs courantes: utilisateur/faq.md
+  - Documentation Technique:
+      - Architecture: technique/architecture.md
+      - Schéma de données: technique/schema-donnees.md
+      - Choix techniques: technique/choix-techniques.md
+      - Stockage vectoriel: technique/stockage.md
+      - Génération et déploiement: technique/generation-deploiement.md
+      - Déploiement applicatif (Docker): technique/deploiement.md
