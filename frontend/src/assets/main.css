@@ -8,14 +8,6 @@
 }
 
 
-.window {
-  display: flex;
-  width: 100vw;
-  height: 100vh;
-  justify-content: center;
-  align-items: center;
-
-}
 
 .not-selected {
   -webkit-user-select: none; /* Safari */
@@ -64,16 +56,6 @@ p {
   transform: translate3d(-40vw, -35vh, 0)
 }
 
-span {
-  display: inline-block;
-  color: #7E3BED;
-  transition: all .5s;
-}
-
-span:hover {
-  transform: translateY(-5px);
-  color: #C6FF34;
-}
 
 
 /* Barre de recherche */
