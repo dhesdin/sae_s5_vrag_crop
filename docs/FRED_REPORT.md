@@ -14,4 +14,11 @@
 - Création des adaptateurs OllamaVLM et OllamaEmbedding + tests
 - MAJ du monitoring (Sprint 00)
 
+## 21/09/26
+- Réflexion en commun sur la méthode utilisée afin d'intégrer la documentation utilisateur. Choix arrêté sur mkdoc et l'intégration continue avec Git.
 
+## 22/09/26
+- Relecture du code et mise en commun des implémentations.
+- Développements et recherches sur ChromaDB et sur la méthode pour implémenter les classes en minimisant les dépendances aux choix de base.
+- Développement des tests d'initialisation d'une collection persistente et de l'envoi de données à chroma en mock
+- Réalisation des tests sur id invalide
