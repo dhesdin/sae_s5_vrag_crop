@@ -43,7 +43,7 @@ def test_image_description_multiple_objects():
     assert desc.detected_objects[1].label == "poubelle"
 
 
-#  ImageDescription : mandatory field missing 
+#  ImageDescription : mandatory field missing
 
 
 def test_image_description_missing_main_subject_raises():
@@ -56,7 +56,7 @@ def test_image_description_missing_background_raises():
         ImageDescription(main_subject="un mur", detected_objects=[])
 
 
-#  DetectedObject : mandatory field missing 
+#  DetectedObject : mandatory field missing
 
 
 def test_detected_object_missing_label_raises():
@@ -69,7 +69,7 @@ def test_detected_object_missing_position_raises():
         DetectedObject(label="vélo", color="rouge")  # w/o position
 
 
-#  DetectedObject : truly optional fields 
+#  DetectedObject : truly optional fields
 
 
 def test_detected_object_minimal_fields_only():
@@ -79,7 +79,7 @@ def test_detected_object_minimal_fields_only():
     assert obj.bounding_box is None
 
 
-#  BoundingBox : valid and invalid cases 
+#  BoundingBox : valid and invalid cases
 
 
 def test_bounding_box_valid():
@@ -101,7 +101,7 @@ def test_detected_object_with_bounding_box():
     assert obj.bounding_box.x == 120
 
 
-#  wrong data types 
+#  wrong data types
 
 
 def test_bounding_box_wrong_type_raises():
@@ -109,7 +109,7 @@ def test_bounding_box_wrong_type_raises():
         BoundingBox(x="dix", y=20, width=100, height=50)  # x should be a number
 
 
-#  BoundingBox : absolute pixel, non-negative coordinates and positive dimensions 
+#  BoundingBox : absolute pixel, non-negative coordinates and positive dimensions
 
 
 def test_bounding_box_negative_x_raises():

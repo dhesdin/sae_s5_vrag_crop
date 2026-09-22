@@ -48,8 +48,8 @@ def test_build_extraction_prompt_is_deterministic():
     assert build_extraction_prompt() == build_extraction_prompt()
 
 
-#  prompt/schema : the hand-written _JSON_EXAMPLE must always match 
-#  the Pydantic schema exactly, recursively 
+#  prompt/schema : the hand-written _JSON_EXAMPLE must always match
+#  the Pydantic schema exactly, recursively
 
 
 def test_json_example_matches_schema_recursively():
