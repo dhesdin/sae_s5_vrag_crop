@@ -13,6 +13,10 @@ theme:
     - navigation.tabs
     - search.suggest
 
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+
 nav:
   - Documentation Utilisateur:
       - Installation & lancement: utilisateur/installation.md
