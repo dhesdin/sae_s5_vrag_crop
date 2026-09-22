@@ -109,3 +109,51 @@ sur x/y/width/height), et le prompt (`service/prompts.py`) et le schéma
   ce choix (génération dynamique jugée disproportionnée pour la taille actuelle du
   schéma), j'ai ajouté un test de cohérence qui compare les clés de l'exemple du
   prompt à celles du schéma. Ce test transforme ce risque silencieux : ça à été relevé dans le rapport de suivi automatique du 13/09/2026 ("prompt et schéma dupliqués"). Donc un garde-fou vérifié en CI : dorénavant, toute modification du schéma sans mise à jour de l'exemple (ou inversement) fait échouer les tests.
+
+---
+
+## Séance du 22/09/2026
+
+Durée: 3h
+
+### Contexte du travail
+
+Objectif de la séance : exécuter les tests réels du prompt d'extraction sur une
+image via `OllamaVLM.generate()`, sur le serveur
+Ollama hébergé sur le réseau de l'IUT. Séance entièrement consommée par un
+problème de connexion au wifi étudiant, aucun avancement sur le code de mon
+périmètre...
+
+### Ce qui a été fait
+
+- Diagnostic réseau sur les deux SSID IUT ("IUT - Etudiant" / "IUT - Etudiant -
+  5GHz") : correction d'une config `nmcli` initiale erronée
+- Vérification du mot de passe via le QR code officiel de l'établissement
+  (`zbar-tools`) et confirmation par un test de connexion réussi sur téléphone
+  avec les mêmes identifiants - élimine l'hypothèse mot de passe
+- Tests successifs sans effet : power management wifi mis hors service
+- Tentative de remplacement du driver in-kernel `rtw_8821ce` par le driver
+  DKMS communautaire `tomaspinho/rtl8821ce` : snapshot Timeshift fait avant, 
+  une connexion réussie de façon isolée puis rechute immédiate sur le même symptôme
+- Restauration du système à l'état d'origine via le snapshot Timeshift, wifi
+  personnel revérifié fonctionnel.
+
+### Difficultés rencontrées
+
+- `4WAY_HANDSHAKE_TIMEOUT` systématique sur les deux SSID, testé sur
+  plusieurs bornes du mesh IUT (BSSID différents), en 2.4GHz comme en 5GHz :
+  la carte s'authentifie et s'associe au point d'accès mais le handshake
+  WPA2 échoue après ~3 secondes
+- Blocage Secure Boot lors de l'installation du driver DKMS (résolu par
+  enrôlement MOK), puis faute IOMMU au chargement du nouveau module (résolu
+  par paramètre kernel), pour un résultat final non concluant
+
+### Décisions techniques
+
+- Arrêt du diagnostic matériel après la restauration Timeshift plutôt que de
+  poursuivre le bricolage driver : Contact du service informatique de l'IUT prévu pour
+  trouver une solution... En attendant cette résolution, contournement
+  retenu pour ne pas bloquer mon travail : demander à Frédéric (partie B), déjà connecté au réseau
+  IUT, d'exécuter le script de test manuel à ma place et de me transmettre les
+  réponses brutes du VLM, afin de pouvoir avancer sur le parsing. Lors des
+  prochaines séances, je pourrai continuer mon travail sans dépendre de la résolution du problème matériel.
