@@ -46,38 +46,33 @@ class ChromaVectorIndex(BaseVectorIndex):
 
         self._collection.add(ids=[id], embeddings=[vector], metadatas=[metadata])
 
-    
     def query(self, vector: list[float], k: int = 5) -> list[VectoreSearchResult]:
-        
+
         if not isinstance(vector, list):
             raise TypeError("le vecteur doit être sous forme de liste de flottant")
-        
+
         if vector == []:
             raise ValueError("le vecteur est obligatoire")
-        
+
         if not all(type(item) in (int, float) for item in vector):
             raise TypeError("les coordonnées du vecteurs doivent être des entiers ou des flottants")
-        
+
         if type(k) is not int:
             raise TypeError("Le nombre de résultats doit être un entier")
-        
+
         if k <= 0:
             raise ValueError("le nombre de résultats doit être positif")
-        
+
         results = self._collection.query(query_embeddings=[vector], n_results=k)
-        
+
         # Recover the first element of each because only one request is sent here
         ids = results["ids"][0]
         distances = results["distances"][0]
         metadatas = results["metadatas"][0]
-        
+
         list_objects = []
         for result_id, result_distance, result_metadata in zip(ids, distances, metadatas):
-            vector_result = VectoreSearchResult(
-                id=result_id,
-                distance=result_distance,
-                metadata=result_metadata
-            )
+            vector_result = VectoreSearchResult(id=result_id, distance=result_distance, metadata=result_metadata)
             list_objects.append(vector_result)
 
         return list_objects
