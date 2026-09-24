@@ -10,6 +10,8 @@ dependencies = [
     "pydantic",
     "chromadb"
                 ]
+    "pydantic>=2,<3",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -20,7 +22,9 @@ dev = [
 "ruff>=0.15,<0.16",
 "pytest>=9.1,<10.0"
 ]
-
+docs = [
+    "mkdocs-material>=9.7,<10",
+]
 
 [tool.ruff]
 line-length = 150
