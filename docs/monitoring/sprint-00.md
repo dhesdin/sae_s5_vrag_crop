@@ -28,8 +28,10 @@ L'objectif est également de respecter les attentes utilisateurs en matière de 
 |Interfaces synchrones VLM / Embedding | Fait | ollama_client/base.py + tests |
 | Adaptateur VLM vers Ollama | Fait | ollama_client/vlm.py + tests unitaires mockés |
 | Adaptateur Embedding vers Ollama | Fait | ollama_client/embedding.py + tests unitaires mockés |
-| Client VLM validé sur un appel test réel (`format="json"`) | Bloquant | En attente de Bloc B |
+| Client VLM validé sur un appel test réel (`format="json"`) | À valider | Code présent (`ollama_client/vlm.py`, `ollama_client/base.py`) et testé unitairement avec mocks (`tests/test_vlm.py`) ; appel réel au serveur Ollama non encore exécuté |
 |Client VLM validé sur un appel test réel avec qwen3-vl:instruct | À valider | Test d'intégration avec le serveur Ollama de l'IUT |
+| Contrainte de bornes sur BoundingBox (pixels absolus) | Fait | `service/schemas.py` + tests dans `tests/test_schemas.py` |
+| Test de cohérence prompt <-> schéma (clés récursives) | Fait | `tests/test_prompt.py::test_json_example_matches_schema_recursively` |
 | Interface utilisateur conversationnelle (Vue.js) | En cours | Développement de l'interface de messagerie, composants UI et parcours utilisateurs    |
 | Adaptation des données côté front                | En cours | Données mockées utilisées temporairement en attendant les données réelles du back-end |
 | Expérience utilisateur (UX/UI)                   | En cours | Travail sur l'ergonomie, la navigation, le responsive design et la cohérence visuelle |
