@@ -8,7 +8,7 @@ class VectoreSearchResult:
     """result of vectorial research"""
 
     id: str
-    score: float
+    distance: float
     metadata: dict[str, Any]
 
 
