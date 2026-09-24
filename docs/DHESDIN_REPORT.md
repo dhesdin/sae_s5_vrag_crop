@@ -157,3 +157,21 @@ périmètre...
   IUT, d'exécuter le script de test manuel à ma place et de me transmettre les
   réponses brutes du VLM, afin de pouvoir avancer sur le parsing. Lors des
   prochaines séances, je pourrai continuer mon travail sans dépendre de la résolution du problème matériel.
+
+## Séance du 24/09/2026
+
+### Ce qui a été fait
+
+- A4 : premier appel réel du VLM (`qwen3-vl:8b-instruct`) via
+  `scripts/manual_vlm_test.py`, testé sur 5 images du dataset. Réponse
+  systématiquement en JSON pur, sans bloc markdown ni texte autour,
+  conforme au schéma `ImageDescription` sur les 5 essais (champs attendus
+  présents, coordonnées bounding box valides).
+
+### Décisions techniques
+
+- Format de sortie stable sur les 5 échantillons testés : ça confirme
+  empiriquement l'hypothèse du prompt (JSON pur attendu), mais le parsing
+  défensif prévu pour A5 reste inchangé - il continue de gérer les cas non
+  observés ici (JSON entouré de texte, bloc markdown), le VLM restant non
+  déterministe et l'échantillon limité à 5 images sur un seul run.
