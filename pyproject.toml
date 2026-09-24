@@ -7,7 +7,7 @@ name = "v-crop-rag"
 version = "0.1.0"
 requires-python = ">=3.10"
 dependencies = [
-    "pydantic",
+    "pydantic>=2,<3",
     "chromadb"
                 ]
 
