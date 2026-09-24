@@ -1,77 +1,73 @@
 <script setup lang="ts">
 import ConversationContainer from './ConversationContainer.vue'
+import Header from "@/components/Header.component.vue"
 import Help from './HelpCenter.vue'
-import { ref } from 'vue'
 
-const isSearch = ref<boolean>(false)
-const showConversation = ref<boolean>(false)
-const searchQuery = ref<string>('')
-import { useMessagesStore } from '../stores/messages.store'
+import { useGlobalVarStore } from "@/stores/globabVar.store"
+import { storeToRefs } from "pinia"
+import InputSearchComponent from './InputSearch.component.vue'
 
-const messagesStore = useMessagesStore()
+const globalVarStore = useGlobalVarStore()
+const { showConversation } = storeToRefs(globalVarStore)
 
-const sendMessage = (message: string) => {
-  messagesStore.addMessage({ id: Date.now(), sender: '2', content: message, time: new Date().toLocaleTimeString() })
-}
-
-const handleSearch = (e: Event) => {
-  e.preventDefault()
-
-  if (!searchQuery.value.trim()) return
-
-  isSearch.value = true
-
-  setTimeout(() => {
-    showConversation.value = true
-  }, 500)
-
-  sendMessage(searchQuery.value)
-
-  searchQuery.value = ''
-}
 </script>
 
 <template>
   <div class="window">
-    <div class="welcome-wrap">
-      <div class="top-wrap">
-        <img class="not-selected" :class="{ 'slide-icon': isSearch }" src="../assets/icon.svg" />
-        <p class="not-selected" :class="{ 'hidden-top': isSearch }">
-          Bienvenue sur <span>Aspect</span>
-        </p>
+    <Header />
+
+    <div id="welcome-wrap">
+      <div id="left-container" class="container">
+        <p class="title">Bienvenue sur <span>Aspect</span></p>
+        <InputSearchComponent id="input-search-container" />
       </div>
 
-      <form @submit="handleSearch">
-        <div id="input-wrap" :class="{ 'slide-down': isSearch }">
-          <div class="input" id="back-input"></div>
-          <input
-            class="input"
-            id="input-search"
-            type="text"
-            v-model="searchQuery"
-            placeholder="Décrivez votre recherche..."
-          />
-          <input type="submit" value="Rechercher" />
-        </div>
-      </form>
+      <div id="right-container" class="container">
+        <img src="../assets/icon.svg" alt="Icon" />
+      </div>
     </div>
-
-    <ConversationContainer
-      class="conversation-container"
+    <!-- <ConversationContainer
+      id="conversation-container"
       :class="{ 'show-conversation': showConversation }"
-    />
+    /> -->
 
     <Help />
   </div>
 </template>
 
 <style lang="css" scoped>
-.conversation-container {
+
+#welcome-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;  /* centre horizontalement les 2 containers */
+  gap: 2rem;                 /* espace entre les deux containers, ajuste selon besoin */
+  max-width: 1200px;         /* limite la largeur totale, ajuste selon ton design */
+  margin: 0 auto;            /* centre le wrap lui-même dans la page */
+}
+
+.container {
+  width: 40%;
+}
+
+#left-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;   /* aligne tous les enfants (titre, input) à gauche */
+  text-align: left;
+}
+
+.title {
+  font-size: 5rem;
+}
+
+
+/* #conversation-container {
   opacity: 0;
   transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.conversation-container.show-conversation {
+#conversation-container.show-conversation {
   opacity: 1;
-}
+} */
 </style>
