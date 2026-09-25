@@ -20,7 +20,6 @@ const { showConversation } = storeToRefs(globalVarStore)
     <main class="workspace">
       <section id="welcome-wrap" aria-labelledby="page-title">
       <div id="left-container" class="container">
-        <div class="eyebrow"><span class="eyebrow-dot"></span> Recherche visuelle augmentee</div>
         <h1 id="page-title" class="title">Décrivez une image.<br /><em>Retrouvez-la.</em></h1>
         <p class="intro">Aspect vous aide à retrouver les images dont vous avez besoin.</p>
         <InputSearchComponent id="input-search-container" />

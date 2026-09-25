@@ -12,10 +12,7 @@ export function handleSearch(e: Event): void {
   if (!searchQuery.value.trim()) return
 
   isSearch.value = true
-
-  setTimeout(() => {
-    showConversation.value = true
-  }, 500)
+  showConversation.value = true
 
   sendMessage(searchQuery.value)
 
