@@ -23,11 +23,12 @@ const { messages } = storeToRefs(messagesStore)
 <style lang="css" scoped>
 .conversation-container {
   overflow-y: auto;
-  overflow-x: none;
-  z-index: -1;
-  width: 80%;
-  height: 80%;
-  position: absolute;
+  overflow-x: hidden;
+  width: min(760px, 100%);
+  max-height: 360px;
+  margin: 0 auto 4rem;
+  padding: 0 1rem 1.5rem;
+  box-sizing: border-box;
 }
 
 

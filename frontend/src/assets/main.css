@@ -3,7 +3,7 @@
 
 /* Application globale */
 #app {
-  max-width: 1280px;
+  min-height: 100vh;
   font-weight: normal;
 }
 
@@ -17,12 +17,6 @@
 }
 
 
-
-/* Ensemble des éléments de la page */
-p {
-  color: white;
-  font-size: 32px;
-}
 
 .welcome-wrap {
   position: relative;

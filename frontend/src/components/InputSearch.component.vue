@@ -13,15 +13,13 @@ const { isSearch, searchQuery } = storeToRefs(globalVarStore)
 <template>
    <form @submit="handleSearch" id="input-search-form">
       <div id="input-wrap" :class="{ 'slide-down': isSearch }">
-        <div class="input" id="back-input"></div>
         <input
-          class="input"
           id="input-search"
           type="text"
           v-model="searchQuery"
           placeholder="Décrivez votre recherche..."
         />
-        <input type="submit" value="Rechercher" />
+        <button type="submit" aria-label="Lancer la recherche"><span>Rechercher</span><i class="bi bi-arrow-up-right"></i></button>
       </div>
     </form>
 </template>
@@ -34,78 +32,72 @@ form {
   transition: all 1s cubic-bezier(.77, 0, .175, 1)
 }
 
-form:has(#input-wrap.slide-down) {
-  transform: translateY(20vh);
-}
-
-
 #input-search-form {
   width: 100%;
 }
 
 #input-wrap {
   position: relative;
-  width: 620px; /* Ajusté à la taille du fond pour centrer proprement */
-  height: 50px;
+  width: 100%;
+  max-width: 620px;
+  height: 64px;
   display: flex;
-  justify-content: center;
   align-items: center;
-  transition: all 1s cubic-bezier(.77, 0, .175, 1);
+  transition: transform 1s cubic-bezier(.77, 0, .175, 1);
 }
 
-input {
-  max-width: 580px;
-  width: 490px;
-  height: 50px;
-  border-radius: 10px;
-  padding: 0 110px 0 20px; /* Espace à droite pour ne pas écrire sous le bouton */
-  /* From https://css.glass */
-  color: white;
-/* From https://css.glass */
-/* From https://css.glass */
-background: rgba(0, 0, 0, 1);
-border-radius: 16px;
-box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-backdrop-filter: blur(6.7px);
--webkit-backdrop-filter: blur(6.7px);
-border: 1px solid rgba(0, 0, 0, 1);
+#input-search {
+  width: 100%;
+  height: 64px;
+  border: 1px solid rgba(24, 24, 24, .22);
+  border-radius: 3px;
+  background: rgba(255, 255, 255, .52);
+  box-shadow: 0 14px 35px rgba(24, 24, 24, .08);
+  color: var(--color-ink);
+  font: inherit;
+  padding: 0 145px 0 22px;
+  transition: border-color .2s ease, box-shadow .2s ease;
 }
 
-input:focus {
+#input-search::placeholder { color: rgba(24, 24, 24, .48); }
+#input-search:focus {
   outline: none;
+  border-color: var(--color-violet);
+  box-shadow: 0 14px 35px rgba(113, 56, 214, .12);
 }
 
-.input {
+form button[type="submit"] {
   position: absolute;
-}
-
-/* Bouton positionné à l'intérieur de l'input */
-form input[type="submit"] {
-  position: absolute;
-  right: 5px; /* Décale le bouton vers l'intérieur à droite */
-  width: auto;
-  height: 40px;
-  padding: 0 15px;
-  border-radius: 8px;
+  right: 8px;
+  height: 48px;
+  padding: 0 14px;
   border: none;
-
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  background: var(--color-ink);
   color: white;
   cursor: pointer;
-  transition: background 0.3s;
-  z-index: 3; /* S'assure qu'il est cliquable au-dessus de l'input */
+  font: inherit;
+  font-size: .78rem;
+  font-weight: 700;
+  transition: background .2s ease, transform .2s ease;
+  z-index: 3;
 }
 
-form input[type="submit"]:hover {
-  background: #6a11cb;
+form button[type="submit"] i {
+  color: var(--color-accent);
+  font-size: 1.1rem;
+}
+
+form button[type="submit"]:hover {
+  background: var(--color-violet);
+  transform: translateY(-2px);
 }
 
 #back-input {
-  width: 620px;
-  height: 50px;
-  background: linear-gradient(to right, #C6FF34, #C6FF34, #7E3BED, #7E3BED);
-  background-size: 800% 600%;
-  filter: blur(20px);
-  animation: gradientAnimation 10s ease infinite;
+  display: none;
 }
 
 </style>
