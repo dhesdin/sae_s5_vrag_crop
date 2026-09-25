@@ -1,7 +1,7 @@
 #### Sprint 0 : Socle & Pipeline d'Extraction Visuelle (V-CROP RAG)
- 
+
 **User Stories**
- 
+
 * US 1.0.1 *(Bloc A - ValentinD)* : En tant que développeur, je dispose d'un schéma Pydantic strict de décomposition de l'image (sujet principal, arrière-plan, liste d'objets notables avec attributs : couleur, position, état, bounding box).
   Fait - `service/schemas.py`, 13 tests, mergé sur `main`.
 * US 1.0.2 *(Bloc A - ValentinD)* : En tant que développeur, je rédige un prompt d'extraction contraignant le VLM à produire une sortie JSON conforme au schéma ci-dessus.
@@ -36,4 +36,3 @@ L'objectif est également de respecter les attentes utilisateurs en matière de 
 | Adaptation des données côté front                | En cours | Données mockées utilisées temporairement en attendant les données réelles du back-end |
 | Expérience utilisateur (UX/UI)                   | En cours | Travail sur l'ergonomie, la navigation, le responsive design et la cohérence visuelle |
 
- 

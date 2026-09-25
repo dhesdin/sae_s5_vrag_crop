@@ -20,5 +20,14 @@
 ## 22/09/26
 - Relecture du code et mise en commun des implémentations.
 - Développements et recherches sur ChromaDB et sur la méthode pour implémenter les classes en minimisant les dépendances aux choix de base.
-- Développement des tests d'initialisation d'une collection persistente et de l'envoi de données à chroma en mock
+- Développement des tests d'initialisation d'une collection persistante et de l'envoi de données à chroma en mock
 - Réalisation des tests sur id invalide
+
+## 23/09/26 et 24/09/26
+- Avancée sur le développement d'une classe ChromaVectorIndex héritant de BaseVectorIndex afin de laisser la possibilité de changer de base ultérieurement
+- Développement des tests et des mocks sur ChromaVectorIndex
+
+## 25/09/26
+- Réalisation de tests d'intégration en utilisant réellement chromadb
+- Interrogation écrite (avec Mme Pacou) et présentation du fonctionnement demandé au niveau de l'interaction IA <-> fichiers
+
