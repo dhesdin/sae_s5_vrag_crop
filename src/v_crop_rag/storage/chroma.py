@@ -49,19 +49,19 @@ class ChromaVectorIndex(BaseVectorIndex):
     def query(self, vector: list[float], k: int = 5) -> list[VectoreSearchResult]:
 
         if not isinstance(vector, list):
-            raise TypeError("le vecteur doit être sous forme de liste de flottant")
+            raise TypeError("vector must be a list")
 
         if vector == []:
-            raise ValueError("le vecteur est obligatoire")
+            raise ValueError("vector is required")
 
         if not all(type(item) in (int, float) for item in vector):
-            raise TypeError("les coordonnées du vecteurs doivent être des entiers ou des flottants")
+            raise TypeError("coordinates of vector must be float or int")
 
         if type(k) is not int:
-            raise TypeError("Le nombre de résultats doit être un entier")
+            raise TypeError("nomber of results must be an integer")
 
         if k <= 0:
-            raise ValueError("le nombre de résultats doit être positif")
+            raise ValueError("nomber of results can't be a negative value")
 
         results = self._collection.query(query_embeddings=[vector], n_results=k)
 
