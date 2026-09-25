@@ -234,3 +234,39 @@ def test_query_reject_invalid_k_value(invalid_k):
         with pytest.raises(ValueError):
             index.query(vector=[0.1, -0.2, 0.7], k=invalid_k)
         mock_collection.query.assert_not_called()
+
+
+def test_add_and_query_integration_with_chroma(tmp_path):
+
+    path_tempo = tmp_path / "chroma"
+
+    index = ChromaVectorIndex(path=path_tempo, collection_name="integration_test")
+
+    index.add(id="Object_A", vector=[1.0, 0.0, 0.0], metadata={"label": "A"})
+    index.add(id="Object_B", vector=[0.0, 1.0, 0.0], metadata={"label": "B"})
+    index.add(id="Object_C", vector=[0.0, 0.0, 1.0], metadata={"label": "C"})
+
+    results = index.query(vector=[0.0, 1.0, 0.0], k=1)
+
+    assert len(results) == 1
+    assert results[0].id == "Object_B"
+    assert results[0].distance == pytest.approx(0.0)
+    assert results[0].metadata == {"label": "B"}
+
+
+def test_chroma_persists_data(tmp_path):
+
+    path_tempo = tmp_path / "chroma"
+
+    index1 = ChromaVectorIndex(path=path_tempo, collection_name="integration_test")
+
+    index1.add(id="Obejct_A", vector=[1.0, 0.0, 0.0], metadata={"label": "A"})
+
+    index2 = ChromaVectorIndex(path=path_tempo, collection_name="integration_test")
+
+    results = index2.query(vector=[1.0, 0.0, 0.0], k=1)
+
+    assert len(results) == 1
+    assert results[0].id == "Obejct_A"
+    assert results[0].distance == pytest.approx(0.0)
+    assert results[0].metadata == {"label": "A"}
