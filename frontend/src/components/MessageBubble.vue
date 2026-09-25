@@ -19,15 +19,15 @@ defineProps<{
   position: relative;
   width: 50%;
   height: auto;
-  border-radius: 16px 16px 0 16px;
   padding: 1em;
 
-  background: rgba(198, 255, 52, 0.1);
+  background: rgba(202, 255, 72, 0.1);
+
 
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(5.5px);
   -webkit-backdrop-filter: blur(5.5px);
-  border: 1px solid rgba(198, 255, 52, 0.5);
+  border: 1px solid rgba(24, 24, 24, .18);
   box-sizing: border-box;
   margin-left: auto;
   margin-right: 0;
@@ -51,12 +51,12 @@ defineProps<{
 }
 
 .message-container.IA {
-  background: #7E3BED1a;
+  background: rgba(113, 56, 214, 0.1);
 
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(5.5px);
   -webkit-backdrop-filter: blur(5.5px);
-  border: 1px solid #7E3BED;
+  border: 1px solid rgba(24, 24, 24, .18);
   box-sizing: border-box;
   margin-left: auto;
   margin-right: 0;
