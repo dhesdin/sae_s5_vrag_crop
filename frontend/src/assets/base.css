@@ -50,6 +50,17 @@
   }
 }
 
+:root {
+  --color-paper: #f3f0e8;
+  --color-ink: #181818;
+  --color-ink-muted: #6e6c65;
+  --color-accent: #caff48;
+  --color-accent-dark: #527300;
+  --color-violet: #7138d6;
+  --color-text: var(--color-ink);
+  --color-background: var(--color-paper);
+}
+
 *,
 *::before,
 *::after {
@@ -59,29 +70,22 @@
 }
 
 body {
-
-  background: #181818;
+  background: var(--color-paper);
   min-height: 100vh;
   color: var(--color-text);
-  transition:
-    color 0.5s,
-    background-color 0.5s;
-  /* line-height: 1.6; */
-  font-family:
-    Inter,
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    Oxygen,
-    Ubuntu,
-    Cantarell,
-    'Fira Sans',
-    'Droid Sans',
-    'Helvetica Neue',
-    sans-serif;
+  font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
   font-size: 15px;
-  /* text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale; */
+  text-rendering: optimizeLegibility;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: .24;
+  background-image: radial-gradient(rgba(24, 24, 24, .14) .7px, transparent .7px);
+  background-size: 7px 7px;
+  mask-image: linear-gradient(to bottom, black, transparent 80%);
 }
