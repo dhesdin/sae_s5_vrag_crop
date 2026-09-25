@@ -70,8 +70,6 @@ def test_parse_valid_json_missing_required_field_raises():
         parse_vlm_response(raw)
     assert "Validation error" in exc_info.value.reason
 
-
-
 # Already-clean JSON should be returned unchanged.
 def test_extract_json_candidate_with_clean_json():
     assert _extract_json_candidate('{"a": 1}') == '{"a": 1}'
@@ -92,3 +90,4 @@ def test_extract_json_candidate_with_surrounding_text():
 # With no braces at all, the function should fall back to returning the stripped input as-is.
 def test_extract_json_candidate_with_no_braces_returns_stripped_input():
     raw = "  pas de json ici  "
+    assert _extract_json_candidate(raw) == "pas de json ici"
