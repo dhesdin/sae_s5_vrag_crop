@@ -16,7 +16,6 @@ _VALID_PAYLOAD = """
 """
 
 
-
 # Clean, well-formed JSON should parse and validate without any extraction needed.
 def test_parse_clean_json():
     result = parse_vlm_response(_VALID_PAYLOAD)
@@ -36,7 +35,6 @@ def test_parse_json_in_markdown_code_fence():
     raw = f"```json\n{_VALID_PAYLOAD}\n```"
     result = parse_vlm_response(raw)
     assert result.main_subject == "un vélo rouge"
-
 
 
 # An empty string must raise our custom exception, not crash further downstream.
@@ -69,6 +67,7 @@ def test_parse_valid_json_missing_required_field_raises():
     with pytest.raises(VLMResponseParsingError) as exc_info:
         parse_vlm_response(raw)
     assert "Validation error" in exc_info.value.reason
+
 
 # Already-clean JSON should be returned unchanged.
 def test_extract_json_candidate_with_clean_json():
