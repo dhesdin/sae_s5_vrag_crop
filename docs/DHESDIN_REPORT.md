@@ -175,3 +175,53 @@ périmètre...
   défensif prévu pour A5 reste inchangé - il continue de gérer les cas non
   observés ici (JSON entouré de texte, bloc markdown), le VLM restant non
   déterministe et l'échantillon limité à 5 images sur un seul run.
+
+  ## Séance du 25/09/2026
+
+Durée: 3h
+
+### Contexte du travail
+
+Transformer la réponse brute (non fiable) du VLM en objet `ImageDescription`
+validé, ou en exception explicite si la réponse est inexploitable.
+
+
+### Ce qui a été fait
+
+- `service/parsing.py` : exception custom `VLMResponseParsingError`, fonction `parse_vlm_response()` couvrant 4 cas
+  d'échec (réponse vide/whitespace, JSON invalide, JSON valide mais champ
+  requis manquant, JSON entouré de texte libre ou de balises markdown), et
+  fonction interne `_extract_json_candidate()` pour isoler le JSON du bruit
+  autour
+- `tests/test_parsing.py` : Multiple tests couvrant les cas nominaux, plus `_extract_json_candidate()` testée en isolation afin de vérifier son comportement sur différents types de bruit autour du JSON.
+- `make lint && make test` : 51/51 tests passants, lint clean
+- Merge sur `main` (branche `dhesdin/parsing-vlm-answers` --> make lint et clean également puis supprimée après
+  merge)
+
+### Difficultés rencontrées
+
+- Plusieurs bugs réels trouvés en construisant pas à pas : ordre de vérification incorrect (le contrôle "réponse vide"
+  passait après le `try`/`json.loads` au lieu d'avant, donc l'entrée `None`
+  passait après le `try`/`json.loads` au lieu d'avant, donc l'entrée `None`
+  crashé de façon non contrôlée), cas "" couvert par premier contrôle mais je suis passé sur .strip() pour détecter les entrées ne contenant que des espaces.
+ - Chaînage d'exception (`raise ... from e`) oublié au premier jet : du coup on perdait le contexte original de l'erreur, rendant le débogage plus difficile.
+
+### Décisions techniques
+
+- Extraction du JSON par position des accolades (premier `{`, dernier `}`)
+  plutôt que par regex : couvre à la fois le cas "JSON entouré de balises
+  markdown" et "JSON entouré de texte libre" avec un seul mécanisme, sans
+  avoir à distinguer les deux cas explicitement. Plus simple et plus robuste
+  qu'une regex dédiée aux balises markdown.
+- `ImageDescription.model_validate(data)` préféré à `ImageDescription(**data)` :
+  `model_validate()` lève systématiquement `pydantic.ValidationError` quel que
+  soit le type de `data`, alors que `**data` lève un `TypeError` non catché si
+  `data` n'est pas un dict (ex: un JSON valide mais qui est une liste). Ce
+  deuxième cas aurait traversé le `except ValidationError` sans être
+  intercepté, cassant la garantie défensive du module.
+- `_extract_json_candidate()` ne lève jamais d'exception elle-même : en
+  l'absence d'accolades, elle retourne le texte brut nettoyé (`stripped`)
+  plutôt que de lever une erreur directement. Ça laisse `json.loads()` dans
+  `parse_vlm_response()` gérer l'échec normalement (déjà catché par
+  `except json.JSONDecodeError`), évite un chemin d'erreur dupliqué, et garde
+  la fonction testable de façon isolée et pure.
