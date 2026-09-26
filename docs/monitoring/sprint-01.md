@@ -33,13 +33,15 @@ Le sprint doit également permettre de commencer l'intégration entre les diffé
   - l'utilisation réelle du modèle d'embedding ;
   - la récupération d'un vecteur valide.
 
-* US 1.1.5 
+* US 1.1.5 *(Bloc C - MathysL)* : En tant qu'utilisateur, je peux saisir une demande de recherche dans l'interface afin de lancer une recherche d'images.
 
-* US 1.1.6 
+  L'interface comprend une page d'accueil et un écran de messagerie. La maquette est réalisée ; l'échange avec le moteur reste à intégrer.
 
-* US 1.1.7 
+* US 1.1.6 *(Bloc C - MathysL)* : En tant que développeur, je peux lancer l'application web dans des conteneurs Docker afin de faciliter son installation et son déploiement.
 
-* US 1.1.8 
+  La livraison doit s'appuyer sur un `Dockerfile` et un fichier `docker-compose.yml`.
+
+
 
 **Livrables / DoR & DoD**
 
@@ -58,3 +60,6 @@ Le sprint doit également permettre de commencer l'intégration entre les diffé
 | Recherche vectorielle `query(vector, k)` | À faire | Tests unitaires et test sur l'index réel |
 | Première recherche texte → embedding → résultats | À faire | Requête de démonstration retournant les images correspondantes (bloqué tant que US 1.1.2 n'est pas livrée) |
 | Tests unitaires du Vector Store | À faire | Tests avec stockage isolé/temporaire |
+| Maquette, page d'accueil et écran de messagerie (Bloc C) | En cours | Maquette et premiers écrans réalisés ; intégration fonctionnelle à finaliser |
+| Transmission de la requête via l'API (Bloc C) | À faire | La demande saisie dans l'interface doit déclencher la recherche |
+| Containerisation de l'application web (Bloc C) | À faire | `Dockerfile`, `docker-compose.yml` et vérification du lancement |
