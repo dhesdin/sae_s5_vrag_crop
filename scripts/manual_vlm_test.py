@@ -5,7 +5,7 @@ from v_crop_rag.ollama_client.vlm import OllamaVLM
 from v_crop_rag.service.prompts import build_extraction_prompt
 
 
-MODEL = "qwen3-vl:8b"
+MODEL = "qwen3-vl:8b-instruct"
 IMAGE_PATH = Path("dataset/market_0.jpg")
 
 
