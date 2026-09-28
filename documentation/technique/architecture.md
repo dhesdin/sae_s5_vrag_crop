@@ -50,7 +50,7 @@ Au Bloc C : le format de sortie JSON par image, défini par le schéma
 | Prompt d'extraction VLM                                                   | `service/prompts.py`        | Implémenté, testé, cohérence avec le schéma vérifiée en CI                    |
 | Listing du dataset                                                        | `service/dataset_loader.py` | Implémenté, testé                                                             |
 | Pipeline d'indexation (orchestration : listing + appel VLM par image)     | `service/core.py`           | Non implémenté                                                                |
-| Parsing défensif de la réponse VLM                                        | `service/parsing.py`        | Non implémenté (code prêt, bloqué par A4 - validation sur réponse VLM réelle) |
+| Parsing défensif de la réponse VLM                                        | `service/parsing.py`        | Implémenté, testé (11 tests, tests/test_parsing.py)                           |
 | Gestion des embeddings par élément détecté                                | `service/utils.py`          | Non implémenté                                                                |
 | Fonction de recherche par embedding                                       | `service/utils.py`          | Non implémenté                                                                |
 | Orchestration complète du pipeline                                        | `service/core.py`           | Non implémenté                                                                |

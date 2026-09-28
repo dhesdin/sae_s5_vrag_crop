@@ -58,7 +58,7 @@ Le sprint doit également permettre de commencer l'intégration entre les diffé
 | Génération d'un embedding distinct par élément détecté (objet/décor/sujet principal) | À faire | Tests unitaires sur la génération d'embeddings (US 1.1.1) |
 | Stockage des métadonnées associées aux embeddings | À faire | Vérification des documents et métadonnées dans ChromaDB |
 | Recherche vectorielle `query(vector, k)` | À faire | Tests unitaires et test sur l'index réel |
-| Première recherche texte → embedding → résultats | À faire | Requête de démonstration retournant les images correspondantes (bloqué tant que US 1.1.2 n'est pas livrée) |
+| Première recherche texte → embedding → résultats | À faire | Requête de démonstration retournant les images correspondantes (bloqué par l'orchestration `service/core.py`, encore vide, et par l'appel réel du modèle d'embedding - cf. ligne "Appel réel du modèle d'embedding via Ollama") |
 | Tests unitaires du Vector Store | À faire | Tests avec stockage isolé/temporaire |
 | Maquette, page d'accueil et écran de messagerie (Bloc C) | En cours | Maquette et premiers écrans réalisés ; intégration fonctionnelle à finaliser |
 | Transmission de la requête via l'API (Bloc C) | À faire | La demande saisie dans l'interface doit déclencher la recherche |

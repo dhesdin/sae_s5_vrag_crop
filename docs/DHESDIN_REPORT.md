@@ -44,7 +44,7 @@ d'extraction structurée.
   champs obligatoires manquants, types invalides, champs optionnels)
 - Conception du prompt d'extraction VLM (instructions + forme JSON + exemple
   concret), avec tests unitaires associés
-- Ajout du loader de dataset (`loader.py`) : listing et tri des chemins
+- Ajout du loader de dataset (`service/dataset_loader.py`) : listing et tri des chemins
   d'images depuis dataset/, sans chargement du contenu en mémoire
 
 ### Difficultés rencontrées
@@ -158,7 +158,11 @@ périmètre...
   réponses brutes du VLM, afin de pouvoir avancer sur le parsing. Lors des
   prochaines séances, je pourrai continuer mon travail sans dépendre de la résolution du problème matériel.
 
+---
+
 ## Séance du 24/09/2026
+
+Durée: 2h
 
 ### Ce qui a été fait
 
@@ -176,7 +180,9 @@ périmètre...
   observés ici (JSON entouré de texte, bloc markdown), le VLM restant non
   déterministe et l'échantillon limité à 5 images sur un seul run.
 
-  ## Séance du 25/09/2026
+---
+
+## Séance du 25/09/2026
 
 Durée: 3h
 
@@ -201,7 +207,6 @@ validé, ou en exception explicite si la réponse est inexploitable.
 ### Difficultés rencontrées
 
 - Plusieurs bugs réels trouvés en construisant pas à pas : ordre de vérification incorrect (le contrôle "réponse vide"
-  passait après le `try`/`json.loads` au lieu d'avant, donc l'entrée `None`
   passait après le `try`/`json.loads` au lieu d'avant, donc l'entrée `None`
   crashé de façon non contrôlée), cas "" couvert par premier contrôle mais je suis passé sur .strip() pour détecter les entrées ne contenant que des espaces.
  - Chaînage d'exception (`raise ... from e`) oublié au premier jet : du coup on perdait le contexte original de l'erreur, rendant le débogage plus difficile.

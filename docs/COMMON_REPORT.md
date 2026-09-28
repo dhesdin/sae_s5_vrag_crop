@@ -26,7 +26,7 @@ Durée: 3h00
 
 | | **Bloc A - Core IA** | **Bloc B - Infra & données** | **Bloc C - Interface & livraison** |
 |---|---|---|---|
-| **Fichiers/dossiers possédés** | `service/{core.py,utils.py, *.py}` , prompts VLM, schéma JSON | `ollama_client/`{base.py, vlm.py, llm.py, embedding.py}, `storage/` | `Dockerfile`, `docker-compose.yml`, `.github/workflows/`, `dataset/`, `tests/` |
+| **Fichiers/dossiers possédés** | `service/{core.py,utils.py}`, `.github/workflows/`, `dataset/` , prompts VLM, schéma JSON,`tests/` | `ollama_client/{base.py, vlm.py, llm.py, embedding.py}`, `storage/`,`tests/` | `Dockerfile`, `docker-compose.yml`, `frontend/`, `tests/` |
 | **Ce qu'il reçoit de qui** | De **Bloc B** : le client VLM/embedding utilisable (`vlm  --> texte`, `embedding --> vecteur`) | Rien en amont | De **Bloc A** : les fonctions de recherches d'images pour le JSON |
 | **Ce qu'il livre à qui** | À **Bloc C** : le format de sortie JSON | À **Bloc A** : les interfaces (classe abstraite) des modèles avec fonction && signatures des méthodes | Rien en aval - bout de chaîne |
 | **Ne touche jamais** | Le code du wrapper Ollama, la config Docker, le storage bas niveau (ChromaDB direct) | Le contenu du schéma JSON, le prompt VLM, la logique de ranking/filtrage | La logique d'extraction VLM, le contenu du wrapper Ollama |
