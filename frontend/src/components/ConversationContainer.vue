@@ -1,20 +1,36 @@
 <template>
-  <div class="conversation-container" role="dialog" aria-modal="true" aria-label="Résultats de recherche">
-    <button class="close-button" type="button" aria-label="Fermer les résultats" @click="closeConversation">
-      <span aria-hidden="true">&times;</span>
-    </button>
-    <MessageBubble v-for="m in messages" :key="m.id" :response="m" />
-    <form id="input-message-form" @submit="submitMessage">
-      <div id="input-wrap" :class="{ 'slide-down': isSearch }">
+  <div class="conversation-overlay" @click.self="closeConversation">
+    <section class="conversation-container" role="dialog" aria-modal="true" aria-labelledby="conversation-title">
+      <header class="conversation-header">
+        <div class="conversation-heading">
+          <img src="@/assets/icon.svg" alt="" />
+          <div>
+            <h2 id="conversation-title">Recherche d’images</h2>
+            <p>Affinez votre recherche avec une description</p>
+          </div>
+        </div>
+        <button class="close-button" type="button" aria-label="Fermer les résultats" @click="closeConversation">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </header>
+      <div class="conversation-messages" aria-live="polite">
+        <MessageBubble v-for="m in messages" :key="m.id" :response="m" />
+      </div>
+      <form class="conversation-form" @submit="submitMessage">
+        <div class="conversation-field">
         <input
           id="input-message-search"
+          class="conversation-input"
           type="text"
           v-model="messageQuery"
           placeholder="Décrivez votre recherche..."
         />
-        <button type="submit" aria-label="Lancer la recherche"><span>Rechercher</span><i class="bi bi-arrow-up-right"></i></button>
-      </div>
-    </form>
+          <button class="conversation-button" type="submit" aria-label="Lancer la recherche">
+            <span>Rechercher</span><i class="bi bi-arrow-up-right" aria-hidden="true"></i>
+          </button>
+        </div>
+      </form>
+    </section>
   </div>
 </template>
 
@@ -46,113 +62,175 @@ function closeConversation() {
 </script>
 
 <style lang="css" scoped>
-.conversation-container {
+.conversation-overlay {
   position: fixed;
   z-index: 10;
   inset: 0;
-  width: min(760px, calc(100vw - 40px));
-  height: min(80vh, 640px);
-  margin: auto;
-  padding: 3.5rem 2rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
   box-sizing: border-box;
-  overflow-y: auto;
-  overflow-x: hidden;
+  background: rgba(24, 24, 24, .38);
+  backdrop-filter: blur(5px);
+}
+
+.conversation-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(760px, 100%);
+  height: min(720px, 86vh);
+  min-height: 320px;
+  box-sizing: border-box;
+  overflow: hidden;
   background: var(--color-paper);
-  border: 1px solid rgba(24, 24, 24, .18);
-  border-radius: 4px;
-  box-shadow: 0 24px 80px rgba(24, 24, 24, .28), 12px 12px 0 var(--color-accent);
+  border: 1px solid rgba(24, 24, 24, .12);
+  border-radius: 18px;
+  box-shadow: 0 24px 80px rgba(24, 24, 24, .25);
+}
+
+.conversation-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(24, 24, 24, .1);
+}
+
+.conversation-heading {
+  display: flex;
+  align-items: center;
+  gap: .85rem;
+}
+
+.conversation-heading img {
+  width: 42px;
+  height: auto;
+}
+
+.conversation-heading h2 {
+  color: var(--color-ink);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.conversation-heading p {
+  margin-top: .25rem;
+  color: var(--color-ink-muted);
+  font-size: .78rem;
+}
+
+.conversation-messages {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: .5rem 1.5rem 1.25rem;
 }
 
 .close-button {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  width: 36px;
-  height: 36px;
-  border: 1px solid rgba(24, 24, 24, .2);
-  border-radius: 50%;
-  background: transparent;
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(24, 24, 24, .12);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .6);
   color: var(--color-ink);
   cursor: pointer;
-  font-size: 1.5rem;
+  font-family: inherit;
+  font-size: 1.4rem;
   line-height: 1;
-  transition: background .2s ease, color .2s ease, transform .2s ease;
+  transition: background .2s ease, color .2s ease;
 }
 
 .close-button:hover {
   background: var(--color-ink);
-  color: var(--color-accent);
-  transform: rotate(90deg);
+  color: white;
 }
 
-
-#input-message-form {
-  position: absolute;
-  right: 2rem;
-  bottom: 1.5rem;
-  left: 2rem;
+.conversation-form {
   display: flex;
-  justify-content: center;
+  padding: 1rem 1.5rem 1.25rem;
+  border-top: 1px solid rgba(24, 24, 24, .1);
+  background: rgba(255, 255, 255, .35);
 }
 
-#input-wrap {
+.conversation-field {
   position: relative;
   width: 100%;
-  max-width: 620px;
-  height: 64px;
+  height: 54px;
   display: flex;
   align-items: center;
 }
 
-#input-message-search {
+.conversation-input {
   width: 100%;
-  height: 64px;
-  border: 1px solid rgba(24, 24, 24, .22);
-  border-radius: 3px;
-  background: rgba(255, 255, 255, .52);
-  box-shadow: 0 14px 35px rgba(24, 24, 24, .08);
+  min-width: 0;
+  height: 54px;
+  box-sizing: border-box;
+  border: 1px solid rgba(24, 24, 24, .18);
+  border-radius: 11px;
+  background: white;
+  box-shadow: 0 8px 24px rgba(24, 24, 24, .06);
   color: var(--color-ink);
-  font: inherit;
-  padding: 0 145px 0 22px;
+  font-family: inherit;
+  font-size: .9rem;
+  padding: 0 148px 0 16px;
   transition: border-color .2s ease, box-shadow .2s ease;
 }
 
-#input-message-search::placeholder { color: rgba(24, 24, 24, .48); }
+.conversation-input::placeholder { color: rgba(24, 24, 24, .48); }
 
-#input-message-search:focus {
+.conversation-input:focus {
   outline: none;
   border-color: var(--color-violet);
-  box-shadow: 0 14px 35px rgba(113, 56, 214, .12);
+  box-shadow: 0 0 0 3px rgba(113, 56, 214, .12);
 }
 
-#input-message-form button[type="submit"] {
+.conversation-button {
   position: absolute;
-  right: 8px;
-  height: 48px;
-  padding: 0 14px;
+  right: 6px;
+  height: 42px;
+  padding: 0 13px;
   border: none;
-  border-radius: 2px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
-  gap: .7rem;
+  justify-content: center;
+  gap: .55rem;
   background: var(--color-ink);
   color: white;
   cursor: pointer;
-  font: inherit;
-  font-size: .78rem;
+  font-family: inherit;
+  font-size: .8rem;
   font-weight: 700;
+  white-space: nowrap;
   transition: background .2s ease, transform .2s ease;
-  z-index: 3;
 }
 
-#input-message-form button[type="submit"] i {
+.conversation-button i {
   color: var(--color-accent);
   font-size: 1.1rem;
 }
 
-#input-message-form button[type="submit"]:hover {
+.conversation-button:hover {
   background: var(--color-violet);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
+.close-button:focus-visible,
+.conversation-button:focus-visible {
+  outline: 3px solid rgba(113, 56, 214, .35);
+  outline-offset: 2px;
+}
+
+@media (max-width: 560px) {
+  .conversation-overlay { padding: 12px; }
+  .conversation-container { height: min(760px, 92vh); border-radius: 14px; }
+  .conversation-header { padding: 1rem; }
+  .conversation-messages { padding: .5rem 1rem 1rem; }
+  .conversation-form { padding: .85rem 1rem 1rem; }
+  .conversation-heading p { max-width: 220px; }
+}
 </style>

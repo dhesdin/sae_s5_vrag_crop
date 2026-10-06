@@ -11,93 +11,106 @@ const { isSearch, searchQuery } = storeToRefs(globalVarStore)
 </script>
 
 <template>
-   <form @submit="handleSearch" id="input-search-form">
-      <div id="input-wrap" :class="{ 'slide-down': isSearch }">
+   <form @submit="handleSearch" class="search-form" id="input-search-form">
+      <div class="search-field" :class="{ 'slide-down': isSearch }">
         <input
+          class="search-input"
           id="input-search"
           type="text"
           v-model="searchQuery"
           placeholder="Décrivez votre recherche..."
         />
-        <button type="submit" aria-label="Lancer la recherche"><span>Rechercher</span><i class="bi bi-arrow-up-right"></i></button>
+        <button class="search-button" type="submit" aria-label="Lancer la recherche">
+          <span>Rechercher</span><i class="bi bi-arrow-up-right" aria-hidden="true"></i>
+        </button>
       </div>
     </form>
 </template>
 
 <style lang="css">
-
-/* Barre de recherche */
-form {
+.search-form {
   display: flex;
-  transition: all 1s cubic-bezier(.77, 0, .175, 1)
-}
-
-#input-search-form {
   width: 100%;
+  justify-content: center;
 }
 
-#input-wrap {
+.search-field {
   position: relative;
   width: 100%;
-  max-width: 620px;
-  height: 64px;
+  max-width: 640px;
+  height: 60px;
   display: flex;
   align-items: center;
-  transition: transform 1s cubic-bezier(.77, 0, .175, 1);
 }
 
-#input-search {
+.search-input {
   width: 100%;
-  height: 64px;
-  border: 1px solid rgba(24, 24, 24, .22);
-  border-radius: 3px;
-  background: rgba(255, 255, 255, .52);
-  box-shadow: 0 14px 35px rgba(24, 24, 24, .08);
+  height: 60px;
+  min-width: 0;
+  border: 1px solid rgba(24, 24, 24, .18);
+  border-radius: 12px;
+  background: #fff;
   color: var(--color-ink);
-  font: inherit;
-  padding: 0 145px 0 22px;
+  font-family: inherit;
+  font-size: .95rem;
+  font-weight: 400;
+  padding: 0 150px 0 20px;
+  box-sizing: border-box;
+  box-shadow: 0 8px 24px rgba(24, 24, 24, .06);
   transition: border-color .2s ease, box-shadow .2s ease;
 }
 
-#input-search::placeholder { color: rgba(24, 24, 24, .48); }
-#input-search:focus {
+.search-input::placeholder { color: rgba(24, 24, 24, .48); }
+
+.search-input:focus {
   outline: none;
   border-color: var(--color-violet);
-  box-shadow: 0 14px 35px rgba(113, 56, 214, .12);
+  box-shadow: 0 0 0 3px rgba(113, 56, 214, .12), 0 8px 24px rgba(24, 24, 24, .06);
 }
 
-form button[type="submit"] {
+.search-button {
   position: absolute;
   right: 8px;
-  height: 48px;
-  padding: 0 14px;
+  height: 44px;
+  padding: 0 16px;
   border: none;
-  border-radius: 2px;
+  border-radius: 9px;
   display: flex;
   align-items: center;
-  gap: .7rem;
+  justify-content: center;
+  gap: .65rem;
   background: var(--color-ink);
   color: white;
   cursor: pointer;
-  font: inherit;
-  font-size: .78rem;
+  font-family: inherit;
+  font-size: .82rem;
   font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
   transition: background .2s ease, transform .2s ease;
-  z-index: 3;
 }
 
-form button[type="submit"] i {
+.search-button i {
   color: var(--color-accent);
   font-size: 1.1rem;
 }
 
-form button[type="submit"]:hover {
+.search-button:hover {
   background: var(--color-violet);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
+}
+
+.search-button:focus-visible {
+  outline: 3px solid rgba(113, 56, 214, .35);
+  outline-offset: 2px;
 }
 
 #back-input {
   display: none;
 }
 
+@media (max-width: 480px) {
+  .search-input { padding-left: 14px; padding-right: 126px; }
+  .search-button { padding: 0 11px; gap: .4rem; }
+}
 </style>

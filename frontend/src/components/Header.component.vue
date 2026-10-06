@@ -2,7 +2,7 @@
 
   <header>
     <div class="wrap">
-      <img id="logo" src="@/assets/icon.svg" alt="" />
+      <img id="logo" src="@/assets/icon.svg" alt="Logo Aspect" />
       <span class="brand">Aspect<span class="brand-mark"></span></span>
     </div>
   </header>
@@ -60,4 +60,3 @@
 
 
 </style>
-

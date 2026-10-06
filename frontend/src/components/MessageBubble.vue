@@ -1,7 +1,8 @@
 <template>
-  <div class="message-container" :class="{ IA: response.sender == '1' }">
+  <div class="message-container" :class="{ 'is-assistant': response.sender == '1' }">
+    <span class="sender">{{ response.sender == '1' ? 'Aspect' : 'Vous' }}</span>
     <p class="content">{{ response.content }}</p>
-    <span id="date">{{ response.time }}</span>
+    <span class="date">{{ response.time }}</span>
   </div>
 </template>
 
@@ -15,69 +16,60 @@ defineProps<{
 
 <style scoped>
 .message-container {
-  margin-top: 2em;
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
   position: relative;
-  width: 50%;
-  height: auto;
-  padding: 1em;
-
-  background: rgba(202, 255, 72, 0.1);
-
-
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(5.5px);
-  -webkit-backdrop-filter: blur(5.5px);
-  border: 1px solid rgba(24, 24, 24, .18);
+  width: fit-content;
+  max-width: min(78%, 520px);
+  margin: 1rem 0 1rem auto;
+  padding: .85rem 1rem .7rem;
+  border: 1px solid rgba(24, 24, 24, .08);
+  border-radius: 14px 14px 4px 14px;
+  background: var(--color-ink);
+  color: white;
   box-sizing: border-box;
-  margin-left: auto;
-  margin-right: 0;
-
-
-  animation: slideUpFade .7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: slideUpFade .25s ease-out both;
 }
 
 .content {
-  font-weight: lighter;
-  font-size: 15px;
+  font-size: .9rem;
+  line-height: 1.5;
   margin: 0;
   overflow-wrap: break-word;
 }
 
-#date {
-  font-size: 10px;
-  position: absolute;
-  bottom: 0;
-  color: grey
+.sender {
+  color: var(--color-accent);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .04em;
 }
 
-.message-container.IA {
-  background: rgba(113, 56, 214, 0.1);
+.date {
+  align-self: flex-end;
+  color: rgba(255, 255, 255, .62);
+  font-size: .65rem;
+}
 
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(5.5px);
-  -webkit-backdrop-filter: blur(5.5px);
-  border: 1px solid rgba(24, 24, 24, .18);
-  box-sizing: border-box;
-  margin-left: auto;
-  margin-right: 0;
-  border-radius: 16px 16px 16px 0;
-  margin-left: 0;
+.message-container.is-assistant {
   margin-right: auto;
+  margin-left: 0;
+  border-color: rgba(113, 56, 214, .14);
+  border-radius: 14px 14px 14px 4px;
+  background: white;
+  color: var(--color-ink);
 }
 
-
-
-
-
+.message-container.is-assistant .sender { color: var(--color-violet); }
+.message-container.is-assistant .date { color: var(--color-ink-muted); }
 
 @keyframes slideUpFade {
-  0% {
-    opacity: 0;
-    transform: translateY(20px); /* Commence 20px plus bas */
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0); /* Remonte à sa position initiale */
-  }
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 560px) {
+  .message-container { max-width: 90%; }
 }
 </style>
