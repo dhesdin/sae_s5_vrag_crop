@@ -1,0 +1,71 @@
+@import './base.css';
+
+
+/* Application globale */
+#app {
+  min-height: 100vh;
+  font-weight: normal;
+}
+
+
+
+.not-selected {
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* Internet Explorer / Edge ancien */
+  user-select: none;         /* Standard moderne */
+}
+
+
+
+.welcome-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 3rem;
+}
+
+/* Eléments supérieurs */
+.top-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-bottom: 5rem;
+  transition: all 1s cubic-bezier(0.77, 0, 0.175, 1)
+}
+
+.top-wrap p.hidden-top {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.top-wrap img.slide-icon {
+  transition: all 1s cubic-bezier(0.77, 0, 0.175, 1)
+}
+.top-wrap img.slide-icon {
+  width: 25%;
+  transform: translate3d(-40vw, -35vh, 0)
+}
+
+
+
+
+
+/*********************************/
+/*         ANIMATION             */
+/*********************************/
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
