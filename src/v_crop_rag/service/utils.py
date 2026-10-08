@@ -4,7 +4,7 @@ from v_crop_rag.service.schemas import BoundingBox, DetectedObject
 def bbox_to_metadata(bbox: BoundingBox | None) -> dict[str, bool | float]:
     """Convert a bounding box into flat, prefixed metadata fields for ChromaDB.
 
-    Chroma metadata values must be scalars (no nested objects or dicts), When bbox is None,
+    Chroma metadata values must be scalars (no nested objects or dicts). When bbox is None,
     only has_bbox=False is returned,
     so objects without a bbox can be filtered with where={"has_bbox": False}.
 
@@ -31,10 +31,25 @@ def bbox_to_metadata(bbox: BoundingBox | None) -> dict[str, bool | float]:
 
 
 def object_to_text(obj: DetectedObject) -> str:
-    """Build the text embedded for a detected object (label, color, state, position).
+    """Build the text embedded for a detected object (label, color, state).
+
+    The position is deliberately excluded: it is relative to the image
+    ("centre droit"), not query vocabulary. It is kept in the metadata instead.
     """
     if not isinstance(obj, DetectedObject):
         raise TypeError("obj must be a DetectedObject")
 
-    parts = [obj.label, obj.color, obj.state, obj.position]
-    return " ".join(part.strip() for part in parts if part and part.strip())    
+    # Fixed order: the same object always produces the same text
+    parts = [obj.label, obj.color, obj.state]
+
+    result = []
+    for part in parts:
+        # Optional fields (color, state) can be None: skip them
+        if part is None:
+            continue
+
+        cleaned = part.strip()
+        if cleaned:  # if content here
+            result.append(cleaned)
+
+    return " ".join(result)
