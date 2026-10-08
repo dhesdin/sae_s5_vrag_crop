@@ -1,8 +1,8 @@
 import pytest
 from chromadb.api.types import validate_metadata
 
-from v_crop_rag.service.schemas import BoundingBox
-from v_crop_rag.service.utils import bbox_to_metadata
+from v_crop_rag.service.schemas import BoundingBox, DetectedObject
+from v_crop_rag.service.utils import bbox_to_metadata, object_to_text
 
 
 # Ensure that bbox items are return with prefixed
@@ -65,3 +65,62 @@ def test_bbox_to_metadata_is_accepted_by_chroma(bbox):
 
     # method directly came from chromadb lib
     validate_metadata(metadata)
+
+
+# Ensure that fields are joined in a fixed order: label, color, state
+def test_object_to_text_joins_fields_in_order():
+    obj = DetectedObject(label="vélo", color="rouge", state="garé", position="centre")
+
+    assert object_to_text(obj) == "vélo rouge garé"
+
+
+# Ensure that optional fields set to None are skipped
+def test_object_to_text_skips_none_fields():
+    obj = DetectedObject(label="vélo", color=None, state=None, position="centre")
+
+    assert object_to_text(obj) == "vélo"
+
+
+# Ensure that surrounding spaces are removed and whitespace-only fields are skipped
+def test_object_to_text_strips_and_skips_blank_fields():
+    obj = DetectedObject(label="  vélo  ", color="   ", state="", position="centre")
+
+    assert object_to_text(obj) == "vélo"
+
+
+# Ensure that a blank label gives an empty text, even if position is filled
+def test_object_to_text_blank_label_returns_empty_string():
+    obj = DetectedObject(label=" ", color=None, state=None, position="centre")
+
+    assert object_to_text(obj) == ""
+
+
+# Ensure that position is not part of the embedded text
+def test_object_to_text_ignores_position():
+    a = DetectedObject(label="vélo", color="rouge", state="garé", position="centre droit")
+    b = DetectedObject(label="vélo", color="rouge", state="garé", position="au fond")
+
+    assert object_to_text(a) == object_to_text(b) == "vélo rouge garé"
+
+
+# Ensure that the bounding box is not part of the embedded text
+def test_object_to_text_ignores_bounding_box():
+    bbox = BoundingBox(x=1, y=2, width=3, height=4)
+    with_bbox = DetectedObject(label="vélo", position="centre", bounding_box=bbox)
+    without_bbox = DetectedObject(label="vélo", position="centre")
+
+    assert object_to_text(with_bbox) == object_to_text(without_bbox) == "vélo"
+
+
+@pytest.mark.parametrize(
+    "invalid_obj",
+    [
+        {"label": "vélo", "position": "centre"},
+        "vélo",
+        None,
+        BoundingBox(x=0, y=0, width=1, height=1),
+    ],
+)
+def test_object_to_text_rejects_non_detected_object(invalid_obj):
+    with pytest.raises(TypeError):
+        object_to_text(invalid_obj)
