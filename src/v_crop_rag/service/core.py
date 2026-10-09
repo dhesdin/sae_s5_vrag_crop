@@ -4,10 +4,10 @@ from v_crop_rag.ollama_client.base import BaseEmbedding, BaseVLM
 from v_crop_rag.service.parsing import parse_vlm_response
 from v_crop_rag.service.prompts import build_extraction_prompt
 from v_crop_rag.service.utils import bbox_to_metadata, image_to_metadata, object_to_text
-from v_crop_rag.storage.chroma import ChromaVectorIndex
+from v_crop_rag.storage.base import BaseVectorIndex
 
 
-def index_image(image_path: Path, vlm: BaseVLM, embedding: BaseEmbedding, index: ChromaVectorIndex) -> int:
+def index_image(image_path: Path, vlm: BaseVLM, embedding: BaseEmbedding, index: BaseVectorIndex) -> int:
     """
     Describe one image with the VLM, then embed and index its background,
     each detected object, and finally its main subject.
@@ -16,10 +16,16 @@ def index_image(image_path: Path, vlm: BaseVLM, embedding: BaseEmbedding, index:
         image_path (Path): Path to the image to be indexed.
         vlm (BaseVLM): Vision model used to describe the image.
         embedding (BaseEmbedding): Embedding model used to vectorize text.
-        index (ChromaVectorIndex): The vector index where embeddings will be stored.
+        index (BaseVectorIndex): The vector index where embeddings will be stored.
     Returns:
         int: number of entries written to the index.
+    Raises:
+        ValueError: if the VLM returns an empty main_subject (no completion marker possible).
     """
+
+    # checked before the VLM call: a wrong type would otherwise fail after seconds of wasted inference
+    if not isinstance(image_path, Path):
+        raise TypeError("image_path must be a Path")
 
     # ==== PROMPT && RESPONSE ==== #
     # ask the VLM to describe the image as structured JSON
@@ -29,6 +35,11 @@ def index_image(image_path: Path, vlm: BaseVLM, embedding: BaseEmbedding, index:
     # ==== PARSING RESPONSE ==== #
     # turn the raw JSON text into a typed ImageDescription (main_subject, background, detected_objects)
     parsed_response = parse_vlm_response(raw_response)
+
+    # main_subject is required: w/o it the image cannot be properly indexed
+    main_subject_text = parsed_response.main_subject.strip()
+    if not main_subject_text:
+        raise ValueError(f"empty main_subject for {image_path.name}, cannot index it")
 
     # ==== COMPUTE EVERYTHING FIRST ==== #
     # collect (id, vector, metadata) here; nothing is written to the index until every
@@ -64,12 +75,12 @@ def index_image(image_path: Path, vlm: BaseVLM, embedding: BaseEmbedding, index:
         entries.append((object_id, embedding.embed(text=object_text), metadata))
 
     # it ensure the main subject entry is only added after all detected objects have been processed
-    main_subject_text = parsed_response.main_subject.strip()
-    if main_subject_text:
-        metadata = {**image_to_metadata(image_path, "main_subject"), "text": main_subject_text}
-        entries.append((f"{image_path.stem}:main", embedding.embed(text=main_subject_text), metadata))
+    metadata = {**image_to_metadata(image_path, "main_subject"), "text": main_subject_text}
+    entries.append((f"{image_path.stem}:main", embedding.embed(text=main_subject_text), metadata))
 
     # ==== WRITE EVERYTHING ONCE ALL EMBEDDINGS SUCCEEDED ==== #
+    # a failure inside this loop (not with vlm unreachable, but in add loop)can still leave partial entries, but then ":main" is
+    # absent, which is exactly how an interrupted image will be detected
     for entry_id, vector, metadata in entries:
         index.add(id=entry_id, vector=vector, metadata=metadata)
 
