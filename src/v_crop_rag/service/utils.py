@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from v_crop_rag.service.schemas import BoundingBox, DetectedObject
 
 
@@ -30,6 +32,20 @@ def bbox_to_metadata(bbox: BoundingBox | None) -> dict[str, bool | float]:
     }
 
 
+def _join_parts(parts: list[str | None]) -> str:
+    """Strip each part, drop the empty/None ones, join what's left with a space."""
+    result = []
+    for part in parts:
+        if part is None:
+            continue
+
+        cleaned = part.strip()
+        if cleaned:
+            result.append(cleaned)
+
+    return " ".join(result)
+
+
 def object_to_text(obj: DetectedObject) -> str:
     """Build the text embedded for a detected object (label, color, state).
 
@@ -40,16 +56,23 @@ def object_to_text(obj: DetectedObject) -> str:
         raise TypeError("obj must be a DetectedObject")
 
     # Fixed order: the same object always produces the same text
-    parts = [obj.label, obj.color, obj.state]
+    return _join_parts([obj.label, obj.color, obj.state])
 
-    result = []
-    for part in parts:
-        # Optional fields (color, state) can be None: skip them
-        if part is None:
-            continue
 
-        cleaned = part.strip()
-        if cleaned:  # if content here
-            result.append(cleaned)
+def image_to_metadata(image_path: Path, element_type: str) -> dict[str, str]:
+    """Build the metadata for a whole-image entry (main_subject or background).
 
-    return " ".join(result)
+    Mirrors bbox_to_metadata, but there is no bbox for the image as a whole.
+    element_type distinguishes a "main_subject" entry from a "background" one.
+    """
+    if not isinstance(image_path, Path):
+        raise TypeError("image_path must be a Path")
+
+    # wrong type first, then empty value: same two-step check as the adapters
+    if not isinstance(element_type, str):
+        raise TypeError("element_type must be a string")
+
+    if not element_type.strip():
+        raise ValueError("element_type is required")
+
+    return {"image": image_path.name, "type": element_type}
