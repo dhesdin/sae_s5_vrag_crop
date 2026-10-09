@@ -31,3 +31,8 @@
 - Réalisation de tests d'intégration en utilisant réellement chromadb
 - Interrogation écrite (avec Mme Pacou) et présentation du fonctionnement demandé au niveau de l'interaction IA <-> fichiers
 
+## 08/10/26
+- Réimprégnation du code et du contexte
+- Création d'un script de test pour un appel réel du modèle d'embedding
+- Maj des sprints
+- Asynchronisation de VLM et Embeddings
