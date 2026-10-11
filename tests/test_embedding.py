@@ -6,7 +6,8 @@ from v_crop_rag.ollama_client.embedding import OllamaEmbedding
 from v_crop_rag.ollama_client.ollama_wrapper_iut import OllamaWrapper
 
 
-def test_embed_returns_vector():
+@pytest.mark.asyncio
+async def test_embed_returns_vector():
     client = create_autospec(OllamaWrapper, instance=True)
 
     expected_vector = [0.1, 0.2, -0.3]
@@ -15,10 +16,10 @@ def test_embed_returns_vector():
 
     embedding = OllamaEmbedding(client=client, model="embeddinggemma")
 
-    result = embedding.embed("sentence of test")
+    result = await embedding.embed("sentence of test")
 
     assert result == expected_vector
-    client.embed.assert_called_once_with(model="embeddinggemma", text="sentence of test")
+    client.embed.assert_awaited_once_with(model="embeddinggemma", text="sentence of test")
 
 
 def test_model_must_be_string():
@@ -35,17 +36,19 @@ def test_model_must_not_be_empty():
         OllamaEmbedding(client=client, model="  ")
 
 
-def test_text_must_be_string():
+@pytest.mark.asyncio
+async def test_text_must_be_string():
     client = create_autospec(OllamaWrapper, instance=True)
     embedding = OllamaEmbedding(client=client, model="embeddinggemma")
 
     with pytest.raises(TypeError):
-        embedding.embed(text=123)
+        await embedding.embed(text=123)
 
 
-def test_text_must_not_be_empty():
+@pytest.mark.asyncio
+async def test_text_must_not_be_empty():
     client = create_autospec(OllamaWrapper, instance=True)
     embedding = OllamaEmbedding(client=client, model="embeddinggemma")
 
     with pytest.raises(ValueError):
-        embedding.embed(text="   ")
+        await embedding.embed(text="   ")

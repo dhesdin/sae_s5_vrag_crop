@@ -31,3 +31,19 @@
 - Réalisation de tests d'intégration en utilisant réellement chromadb
 - Interrogation écrite (avec Mme Pacou) et présentation du fonctionnement demandé au niveau de l'interaction IA <-> fichiers
 
+## 08/10/26
+- Réimprégnation du code et du contexte
+- Création d'un script de test pour un appel réel du modèle d'embedding
+- Maj des sprints
+- Recherches sur Asynchronisation de VLM et Embeddings
+
+Difficultés rencontrées sur la semaine:
+- A titre personnel, la taille des créneaux complique un peu l'avancée. Le temps de se réimprégner du code et de faire le point avec l'équipe, le créneau est déjà bien engagé.
+
+## 11/10/26
+- Asynchronisation de VLM et Embeddings + Ollama Wrapper IUT
+- maj des fichiers et des tests
+- maj des scripts et test en local
+*A Faire: Sprint 2 = tester les scripts à l'IUT*
+
+
