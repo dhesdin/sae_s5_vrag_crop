@@ -61,3 +61,4 @@ L'API doit :
 | Tests d'intégration de l'API de recherche | À faire | Tests couvrant requête valide, absence de résultat, erreur moteur et données invalides |
 | Non-régression des tests existants | À maintenir | Tous les tests déjà présents dans le projet doivent continuer à passer |
 | Qualité du code | À maintenir | Ruff / lint et conventions du projet respectés |
+| Tests des scripts dans l'environnement IUT (suite au passage en asynchrone) | À faire | Tests passent |
