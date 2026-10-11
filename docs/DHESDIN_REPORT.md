@@ -230,3 +230,83 @@ validé, ou en exception explicite si la réponse est inexploitable.
   `parse_vlm_response()` gérer l'échec normalement (déjà catché par
   `except json.JSONDecodeError`), évite un chemin d'erreur dupliqué, et garde
   la fonction testable de façon isolée et pure.
+
+
+  ---
+
+## Séances du 06/10/2026 au 09/10/2026
+
+Durée: 3h
+
+### Contexte du travail
+
+Début de A6/A7 : orchestration de l'indexation d'une image (`service/core.py`),
+c'est le seul blocage identifié par l'audit du 28/09 (`core.py` vide). Travail sur
+la branche `dhesdin/index-single-image`, non mergée à ce stade car il manque tests unitaire et les essais réels.
+
+### Ce qui a été fait
+
+- `service/utils.py` : `bbox_to_metadata()` (aplatit la bounding box en métadonnées
+  scalaires préfixées `bbox_*` + `has_bbox`), `object_to_text()` (texte embeddé d'un
+  objet), `image_to_metadata()` (métadonnées du sujet principal et du décor), et
+  `_join_parts()` partagée.
+- `tests/test_utils.py` : tests de `bbox_to_metadata` (dont un contrôle depuis directement la librairie
+  `chromadb.api.types.validate_metadata`) et de `object_to_text`.
+- `service/core.py` : `index_image()` : prompt, appel VLM, parsing, puis un embedding
+  par objet, un pour le décor, un pour le sujet principal. Commitée sur la branche.
+- `scripts/manual_index_test.py` : squelette seulement, câblage à faire (tests unitaire aussi à prévoir pour core.py et utils.py(nouvelles fonctions))
+
+### Difficultés rencontrées
+
+### Difficultés rencontrées
+
+- Format des métadonnées attendu par ChromaDB : j'ai d'abord pensé envoyer la
+  bounding box telle quelle, donc un dict (ou un objet) imbriqué dans le dict de
+  métadonnées. Chroma attend des métadonnées plates, avec des valeurs scalaires
+  (str, int, float, bool). D'où `bbox_to_metadata()`, qui aplatit la bounding box
+  en champs préfixés `bbox_*` + `has_bbox`.
+- Structuration de `core.py` : c'est le fichier qui m'a demandé le plus
+  d'itérations.
+  - un embedding distinct par objet, par décor et par sujet principal ;
+  - des métadonnées exploitables (image source, type, texte embeddé, label,
+    position) ;
+  - tous les embeddings calculés avant le premier `add` ;
+  - l'entrée `:main` écrite en dernier, comme marqueur de complétion.
+- Première version de `bbox_to_metadata` : le contrôle de type passait avant le
+  test `None`, donc le cas courant (objet sans bbox) levait une erreur, et
+  `has_bbox` était écrasé. Trouvé en relecture.
+
+### Décisions techniques
+
+- Texte embeddé d'un objet : `label`, `color`, `state`. La position n'y est pas : elle
+  est relative à l'image (« centre droit »), ce n'est pas du vocabulaire de requête.
+  Elle reste en métadonnée pour l'affichage. Hypothèse non encore mesurée : à valider
+  sur des requêtes de test.
+- Un embedding distinct par élément, conformément à la fiche : sujet principal et décor
+  ne sont pas fusionnés.
+- Ids : `{image}:{i}` pour les objets (index = position dans `detected_objects`),
+  `{image}:background`, `{image}:main`. Séparateur `:` car les noms du dataset
+  contiennent déjà `_0`, `_1`...
+- Marqueur de complétion : `:main` est écrit en dernier. Tous les embeddings sont
+  calculés avant le premier `add`.
+- `index_image` dépend des types de base (`BaseVLM`, `BaseEmbedding`, `BaseVectorIndex`),
+  pas des classes concrètes, et n'attrape aucune exception : c'est la boucle sur le
+  répertoire qui décidera de sauter une image ou d'arrêter. Pour moi c'est l'appelant qui décidé quoi en faire de son application
+  Par exemple sauter une image, s'arrêter à la première erreur, continuer malgré les erreurs...
+- `main_subject` vide : `ValueError` avant tout calcul (choix provisoire).
+
+### Points ouverts
+
+- À fournir par FredericG : `exists(id)` et une suppression par image (cache et
+  réindexation).
+- À vérifier : métrique de distance de la collection Chroma (cosinus exigé par la
+  fiche) ; comportement de Chroma sur un `add` avec id déjà présent ; préfixe de tâche
+  d'embeddinggemma (model card) ; unité des coordonnées de bbox sur une sortie réelle.
+
+### À faire
+
+- Tests de `image_to_metadata` et `tests/test_core.py` (faux VLM, faux embedder, faux
+  index).
+- Câblage de `scripts/manual_index_test.py` et essais réels (latence, dimension du
+  vecteur, relance sur la même image).
+- Boucle sur le dataset et cache, puis recherche et ranking (A8).
