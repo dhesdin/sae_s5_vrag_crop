@@ -1,28 +1,39 @@
+ # To test this script outside IUT, you should be have an instance of ollama on your computer and can test in comment off the client declaration
+import asyncio
+
 from v_crop_rag.ollama_client.embedding import OllamaEmbedding
 from v_crop_rag.ollama_client.ollama_wrapper_iut import OllamaWrapper
 
 
-client = OllamaWrapper()
+async def main():
 
-embedding_model = OllamaEmbedding(
-    client=client,
-    model="embeddinggemma",
-)
+    client = OllamaWrapper()
+   
+    # client = OllamaWrapper(base_url="http://localhost:11434")
 
-vector = embedding_model.embed(
-    "Un vélo rouge est posé contre un mur."
-)
+    embedding_model = OllamaEmbedding(
+        client=client,
+        model="embeddinggemma",
+    )
 
-print("Type :", type(vector))
-print("Dimension :", len(vector))
-print("Premières valeurs :", vector[:10])
+    vector = await embedding_model.embed(
+        "Un vélo rouge est posé contre un mur."
+    )
 
-vector1 = embedding_model.embed("Un vélo rouge")
-vector2 = embedding_model.embed("Un vélo noir")
+    print("Type :", type(vector))
+    print("Dimension :", len(vector))
+    print("Premières valeurs :", vector[:10])
 
-print(len(vector1))
-print(len(vector2))
-print(vector1 == vector2)
+    vector1 = await embedding_model.embed("Un vélo rouge")
+    vector2 = await embedding_model.embed("Un vélo noir")
+
+    print(len(vector1))
+    print(len(vector2))
+    print(vector1 == vector2)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
 
 # Test Ok pour la cohérence
 # ==================================================
