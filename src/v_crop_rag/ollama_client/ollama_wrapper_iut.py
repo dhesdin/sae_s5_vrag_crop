@@ -1,7 +1,6 @@
 from __future__ import annotations  # Permet les annotations de types en avant-référence (Python < 3.11)
 
 import base64  # Encodage base64 requis pour envoyer des images à /api/generate
-import json  # Sérialisation/désérialisation JSON
 import shutil  # Pour trouver l'exécutable "ollama" dans le PATH
 import socket  # Pour tester rapidement si un port TCP est ouvert
 import subprocess  # Pour lancer "ollama serve"
@@ -9,6 +8,8 @@ import time  # Pour boucler avec un timeout lors du démarrage serveur
 from dataclasses import dataclass  # Modèles de données simples et typés
 from pathlib import Path  # Manipulation robuste des chemins
 from typing import Any, Dict, List, Mapping, Optional, Union  # Types
+
+import httpx  # pour passer les requêtes en asynchrone
 
 # ------------------------------
 # Exceptions spécifiques (pédagogie + robustesse)
@@ -102,14 +103,14 @@ class OllamaWrapper:
     # Méthodes "système"
     # --------------------------
 
-    def is_server_running(self) -> bool:
+    async def is_server_running(self) -> bool:
         """
         Retourne True si le serveur Ollama répond.
 
         Stratégie : on essaie GET /api/version (léger et dédié à ça).
         """
         try:
-            _ = self.get_version()  # Appel dédié à la version
+            _ = await self.get_version()  # Appel dédié à la version
             return True  # Si pas d'exception : serveur OK
         except OllamaConnectionError:
             return False  # Pas de serveur (ou port inaccessible)
@@ -206,22 +207,22 @@ class OllamaWrapper:
     # Endpoints "information"
     # --------------------------
 
-    def get_version(self) -> str:
+    async def get_version(self) -> str:
         """
         Retourne la version du serveur Ollama via GET /api/version. :contentReference[oaicite:3]{index=3}
         """
-        payload = self._http_request_json("GET", "/api/version", body=None)
+        payload = await self._http_request_json("GET", "/api/version", body=None)
         # La doc renvoie typiquement { "version": "x.y.z" }.
         version = payload.get("version")
         if not isinstance(version, str):
             raise OllamaResponseError(f"Réponse /api/version inattendue: {payload!r}")
         return version
 
-    def list_models(self) -> List[OllamaModelInfo]:
+    async def list_models(self) -> List[OllamaModelInfo]:
         """
         Liste les modèles installés via GET /api/tags. :contentReference[oaicite:4]{index=4}
         """
-        payload = self._http_request_json("GET", "/api/tags", body=None)
+        payload = await self._http_request_json("GET", "/api/tags", body=None)
         raw_models = payload.get("models")
         if not isinstance(raw_models, list):
             raise OllamaResponseError(f"Réponse /api/tags inattendue: {payload!r}")
@@ -264,7 +265,7 @@ class OllamaWrapper:
     # Génération
     # --------------------------
 
-    def generate_text(
+    async def generate_text(
         self,
         *,
         model: str,
@@ -298,7 +299,7 @@ class OllamaWrapper:
         if options is not None:
             body["options"] = dict(options)
 
-        payload = self._http_request_json("POST", "/api/generate", body=body)
+        payload = await self._http_request_json("POST", "/api/generate", body=body)
 
         # Extrait la réponse principale.
         response_text = payload.get("response")
@@ -315,7 +316,7 @@ class OllamaWrapper:
             eval_count=payload.get("eval_count") if isinstance(payload.get("eval_count"), int) else None,
         )
 
-    def generate_with_image(
+    async def generate_with_image(
         self,
         *,
         model: str,
@@ -371,7 +372,7 @@ class OllamaWrapper:
         # (Optionnel) on peut conserver un hint MIME à des fins de debug, sans l'envoyer.
         _ = image_mime_hint  # Evite un "unused var" si tu montres aux étudiants
 
-        payload = self._http_request_json("POST", "/api/generate", body=body)
+        payload = await self._http_request_json("POST", "/api/generate", body=body)
 
         response_text = payload.get("response")
         if not isinstance(response_text, str):
@@ -391,7 +392,7 @@ class OllamaWrapper:
     # Bonus : embeddings (optionnel pour ton cours)
     # --------------------------
 
-    def embed(
+    async def embed(
         self,
         *,
         model: str,
@@ -404,7 +405,7 @@ class OllamaWrapper:
         (selon docs/api.md). :contentReference[oaicite:7]{index=7}
         """
         body: Dict[str, Any] = {"model": model, "input": text}
-        payload = self._http_request_json("POST", "/api/embed", body=body)
+        payload = await self._http_request_json("POST", "/api/embed", body=body)
 
         # Selon versions, la forme peut varier ; on vise un cas courant : {"embeddings":[[...]]} ou {"embedding":[...]}.
         if isinstance(payload.get("embedding"), list):
@@ -423,7 +424,7 @@ class OllamaWrapper:
     # Couche HTTP (sans dépendance externe)
     # --------------------------
 
-    def _http_request_json(
+    async def _http_request_json(
         self,
         method: str,
         path: str,
@@ -431,17 +432,14 @@ class OllamaWrapper:
         body: Optional[Mapping[str, Any]],
     ) -> Dict[str, Any]:
         """
-        Exécute une requête HTTP et retourne un dict JSON.
+        Exécute une requête HTTP asynchrone et retourne un dict JSON.
 
         On utilise urllib (stdlib) pour éviter une dépendance à requests/httpx dans un contexte étudiant.
         """
         # Import local pour ne pas polluer le namespace global et montrer le principe.
-        import urllib.error  # Exceptions réseau HTTP
-        import urllib.request  # Client HTTP standard
-        from urllib.parse import urljoin  # Construit proprement l'URL finale
 
         # Construit l'URL complète.
-        url: str = urljoin(self._base_url + "/", path.lstrip("/"))
+        url = f"{self._base_url}/{path.lstrip('/')}"
 
         # Prépare les headers.
         headers: Dict[str, str] = {
@@ -449,40 +447,29 @@ class OllamaWrapper:
             "Content-Type": "application/json",  # Si body présent
         }
 
-        # Sérialise le body en JSON si nécessaire.
-        data: Optional[bytes]
-        if body is None:
-            data = None
-        else:
-            data = json.dumps(body).encode("utf-8")  # JSON -> bytes UTF-8
-
-        # Construit l'objet Request.
-        request = urllib.request.Request(
-            url=url,
-            data=data,
-            headers=headers,
-            method=method.upper(),
-        )
-
         try:
             # Exécute la requête avec timeout.
-            with urllib.request.urlopen(request, timeout=self._timeout_s) as response:
-                raw: bytes = response.read()  # Lit tout le corps
-        except urllib.error.URLError as e:
-            # Typiquement : connection refused, host unreachable, timeout, etc.
-            raise OllamaConnectionError(f"Impossible de joindre Ollama à {url}: {e}") from e
-        except Exception as e:
-            # Autres erreurs réseau inattendues.
-            raise OllamaConnectionError(f"Erreur réseau vers {url}: {e}") from e
+            async with httpx.AsyncClient(timeout=self._timeout_s) as client:
+                response = await client.request(
+                    method=method.upper(),
+                    url=url,
+                    headers=headers,
+                    json=dict(body) if body is not None else None,
+                )
 
-        # Décode en texte.
-        text = raw.decode("utf-8", errors="replace")
+            response.raise_for_status()
+
+        except httpx.HTTPStatusError as e:
+            # Typiquement : connection refused, host unreachable, timeout, etc.
+            raise OllamaConnectionError(f"Ollama returned HTTP {e.response.status_code} for {url}: {e.response.text[:200]!r}") from e
+        except httpx.RequestError as e:
+            raise OllamaConnectionError(f"Impossible de joindre Ollama à {url}: {e}") from e
 
         # Parse JSON.
         try:
-            payload = json.loads(text)
-        except json.JSONDecodeError as e:
-            raise OllamaResponseError(f"Réponse non-JSON depuis {url} (début): {text[:200]!r}") from e
+            payload = response.json()
+        except ValueError as e:
+            raise OllamaResponseError(f"Réponse non-JSON depuis {url}: {response.text[:200]!r}") from e
 
         # On attend un dict JSON.
         if not isinstance(payload, dict):

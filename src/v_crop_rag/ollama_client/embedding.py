@@ -15,11 +15,11 @@ class OllamaEmbedding(BaseEmbedding):
         self._client = client
         self._model = model
 
-    def embed(self, text: str) -> list[float]:
+    async def embed(self, text: str) -> list[float]:
         if not isinstance(text, str):
             raise TypeError("text must be a string")
 
         if text.strip() == "":
             raise ValueError("text is required")
 
-        return self._client.embed(model=self._model, text=text)
+        return await self._client.embed(model=self._model, text=text)
