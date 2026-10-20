@@ -17,7 +17,7 @@ class OllamaVLM(BaseVLM):
         self._client = client
         self._model = model
 
-    def generate(self, prompt: str, image: str | Path | bytes) -> str:
+    async def generate(self, prompt: str, image: str | Path | bytes) -> str:
         if not isinstance(prompt, str):
             raise TypeError("prompt must be a string")
 
@@ -27,5 +27,5 @@ class OllamaVLM(BaseVLM):
         if not isinstance(image, str | Path | bytes):
             raise TypeError("image must be a string or a path or bytes")
 
-        result = self._client.generate_with_image(model=self._model, prompt=prompt, image=image)
+        result = await self._client.generate_with_image(model=self._model, prompt=prompt, image=image)
         return result.response
