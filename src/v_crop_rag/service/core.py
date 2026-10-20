@@ -7,10 +7,12 @@ from v_crop_rag.service.utils import bbox_to_metadata, image_to_metadata, object
 from v_crop_rag.storage.base import BaseVectorIndex
 
 
-def index_image(image_path: Path, vlm: BaseVLM, embedding: BaseEmbedding, index: BaseVectorIndex) -> int:
+async def index_image(image_path: Path, vlm: BaseVLM, embedding: BaseEmbedding, index: BaseVectorIndex) -> int:
     """
     Describe one image with the VLM, then embed and index its background,
     each detected object, and finally its main subject.
+
+    Asynchronous: awaits the VLM call and every embedding call, sequentially (no concurrency).
 
     Args:
         image_path (Path): Path to the image to be indexed.
@@ -20,7 +22,8 @@ def index_image(image_path: Path, vlm: BaseVLM, embedding: BaseEmbedding, index:
     Returns:
         int: number of entries written to the index.
     Raises:
-        ValueError: if the VLM returns an empty main_subject (no completion marker possible).
+        ValueError: if the VLM returns an empty main_subject, since without it the ":main"
+            completion marker entry cannot be created.
     """
 
     # checked before the VLM call: a wrong type would otherwise fail after seconds of wasted inference
@@ -30,13 +33,13 @@ def index_image(image_path: Path, vlm: BaseVLM, embedding: BaseEmbedding, index:
     # ==== PROMPT && RESPONSE ==== #
     # ask the VLM to describe the image as structured JSON
     prompt = build_extraction_prompt()
-    raw_response = vlm.generate(prompt=prompt, image=image_path)
+    raw_response = await vlm.generate(prompt=prompt, image=image_path)
 
     # ==== PARSING RESPONSE ==== #
     # turn the raw JSON text into a typed ImageDescription (main_subject, background, detected_objects)
     parsed_response = parse_vlm_response(raw_response)
 
-    # main_subject is required: w/o it the image cannot be properly indexed
+    # main_subject is required: without it, the ":main" completion marker entry cannot be created
     main_subject_text = parsed_response.main_subject.strip()
     if not main_subject_text:
         raise ValueError(f"empty main_subject for {image_path.name}, cannot index it")
@@ -50,7 +53,7 @@ def index_image(image_path: Path, vlm: BaseVLM, embedding: BaseEmbedding, index:
     background_text = parsed_response.background.strip()
     if background_text:
         metadata = {**image_to_metadata(image_path, "background"), "text": background_text}
-        entries.append((f"{image_path.stem}:background", embedding.embed(text=background_text), metadata))
+        entries.append((f"{image_path.stem}:background", await embedding.embed(text=background_text), metadata))
 
     # one entry per detected object
     for i, obj in enumerate(parsed_response.detected_objects):
@@ -72,15 +75,16 @@ def index_image(image_path: Path, vlm: BaseVLM, embedding: BaseEmbedding, index:
         }
         # separator : because the dataset filenames already contain "_{number}"
         object_id = f"{image_path.stem}:{i}"
-        entries.append((object_id, embedding.embed(text=object_text), metadata))
+        entries.append((object_id, await embedding.embed(text=object_text), metadata))
 
     # it ensure the main subject entry is only added after all detected objects have been processed
     metadata = {**image_to_metadata(image_path, "main_subject"), "text": main_subject_text}
-    entries.append((f"{image_path.stem}:main", embedding.embed(text=main_subject_text), metadata))
+    entries.append((f"{image_path.stem}:main", await embedding.embed(text=main_subject_text), metadata))
 
     # ==== WRITE EVERYTHING ONCE ALL EMBEDDINGS SUCCEEDED ==== #
-    # a failure inside this loop (not with vlm unreachable, but in add loop)can still leave partial entries, but then ":main" is
-    # absent, which is exactly how an interrupted image will be detected
+    # (a) if any embedding above failed, nothing has been written to the index yet.
+    # (b) a failure here, mid-loop, can still leave partial entries; but since ":main" is appended
+    # last, its absence is exactly how an interrupted image is detected.
     for entry_id, vector, metadata in entries:
         index.add(id=entry_id, vector=vector, metadata=metadata)
 
