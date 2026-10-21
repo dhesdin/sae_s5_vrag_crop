@@ -1,7 +1,7 @@
 
 
 from fastapi import APIRouter
-from models.Response import Response
+from models.Response import Response, Role
 
 class ResponsesRouter(APIRouter):
 
@@ -20,8 +20,8 @@ class ResponsesRouter(APIRouter):
     async def get_all_responses(self) -> dict:
 
         responses_list : list[Response] = [
-            Response(id=1, content="This is the first response", img_url="https://example.com/image1.jpg"),
-            Response(id=2, content="This is the second response", img_url="https://example.com/image2.jpg")
+            Response(id=1, role=Role.USER, content="This is the first response", img_url="https://example.com/image1.jpg"),
+            Response(id=2, role=Role.IA, content="This is the second response", img_url="https://example.com/image2.jpg")
         ]
 
         return {
@@ -31,7 +31,7 @@ class ResponsesRouter(APIRouter):
 
     async def get_response_by_id(self, response_id: int) -> dict:
 
-        response : Response = Response(id=response_id, content="This is the response", img_url="https://example.com/image.jpg")
+        response : Response = Response(id=response_id, role=Role.IA, content="This is the response", img_url="https://example.com/image.jpg")
         return {
             "message": f"Getting response with ID {response_id}",
             "content": [response]
