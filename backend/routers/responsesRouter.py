@@ -12,6 +12,7 @@ class ResponsesRouter(APIRouter):
     def _register_endpoints(self):
         self.get("/", response_model=dict)(self.root)
         self.get("/all", response_model=dict)(self.get_all_responses)
+        self.get("/{response_id}", response_model=dict)(self.get_response_by_id)
 
     async def root(self) -> dict:
         return {"message": "Responses route"}
@@ -19,5 +20,11 @@ class ResponsesRouter(APIRouter):
     async def get_all_responses(self) -> dict:
         return {
             "message": "Getting all responses",
+            "content": []
+        }
+
+    async def get_response_by_id(self, response_id: int) -> dict:
+        return {
+            "message": f"Getting response with ID {response_id}",
             "content": []
         }
