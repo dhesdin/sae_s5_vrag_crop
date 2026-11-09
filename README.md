@@ -103,7 +103,7 @@ Répartition détaillée : `docs/COMMON_REPORT.md`.
 - **Interface & livraison (Bloc C)** : Vue 3, Docker / Docker Compose
 - **Documentation & CI** : MkDocs Material, GitHub Actions
 
-Tout passe par Ollama en local, sur le serveur de l'IUT — aucun service cloud.
+Tout passe par Ollama en local, sur le serveur de l'IUT - aucun service cloud.
 
 ## Structure du dépôt
 

@@ -14,10 +14,14 @@ def main() -> None:
     # one Ollama client reused for both the VLM call and the embedding call
     client = OllamaWrapper()
 
-    # fail fast: no point building prompts if Ollama is unreachable
+    # guard clauses
     if not client.is_server_running():
         raise SystemExit("Ollama server is not running")
 
+    if not IMAGE_PATH.exists():
+        raise SystemExit(f"Image not found at {IMAGE_PATH}")
+
+    
 
     # TODO
     # TODO

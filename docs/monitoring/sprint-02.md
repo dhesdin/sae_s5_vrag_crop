@@ -1,4 +1,4 @@
-#### Sprint 2 — Orchestration et pipeline complet V-CROP RAG
+#### Sprint 2 - Orchestration et pipeline complet V-CROP RAG
 
 **Objectif du sprint**
 
