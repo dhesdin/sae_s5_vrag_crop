@@ -1,6 +1,6 @@
 
 import uvicorn
-from app import App
+from backend.app import App
 
 
 def run() -> None:

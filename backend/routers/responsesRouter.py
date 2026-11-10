@@ -1,7 +1,7 @@
 
 
 from fastapi import APIRouter
-from models.Response import Response, Role
+from backend.models.Response import Response, Role
 
 class ResponsesRouter(APIRouter):
 
@@ -9,7 +9,9 @@ class ResponsesRouter(APIRouter):
         super().__init__(prefix="/responses", tags=["responses"])
         self._register_endpoints()
 
-    def _register_endpoints(self):
+    def _register_endpoints(self) -> None:
+        """ Fonction permettant d'enregistrer toutes les routes au sein du router.
+        """
         self.get("/", response_model=dict)(self.root)
         self.get("/all", response_model=dict)(self.get_all_responses)
         self.get("/{response_id}", response_model=dict)(self.get_response_by_id)
@@ -30,7 +32,20 @@ class ResponsesRouter(APIRouter):
         }
 
     async def get_response_by_id(self, response_id: int) -> dict:
+        """
+        Fonction permettant de trouver une réponse en fonction de son Id. Si la réponse est trouvée un dictionnaire contenant la réponse sera renvoyé 
+        ou vide sinon
 
+        Parameters
+        ----------
+        response_id : int
+            Id de la réponse a rechercher
+
+        Returns
+        -------
+        type
+            Description
+        """
         response : Response = Response(id=response_id, role=Role.IA, content="This is the response", img_url="https://example.com/image.jpg")
         return {
             "message": f"Getting response with ID {response_id}",
