@@ -1,7 +1,6 @@
 from v_crop_rag.ollama_client.base import BaseEmbedding
 from v_crop_rag.ollama_client.ollama_wrapper_iut import OllamaWrapper
 
-
 class OllamaEmbedding(BaseEmbedding):
     """Implement a Embedging using Ollama"""
 
