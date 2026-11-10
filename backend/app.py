@@ -2,7 +2,7 @@
     
 from fastapi import FastAPI
 
-from routers.responsesRouter import ResponsesRouter
+from backend.routers.responsesRouter import ResponsesRouter
 
 
 class App(FastAPI):
