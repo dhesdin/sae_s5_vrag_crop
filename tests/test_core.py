@@ -73,6 +73,9 @@ class FakeIndex(BaseVectorIndex):
 
     def query(self, vector, k=5):
         return []
+    
+    def exists(self, id):
+        return any(entry_id == id for entry_id, _, _ in self.added)
 
 
 # background, then the detected objects, then the main subject last, in that exact order
