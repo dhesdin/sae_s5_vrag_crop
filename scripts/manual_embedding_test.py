@@ -1,19 +1,20 @@
  # To test this script outside IUT, you should be have an instance of ollama on your computer and can test in comment off the client declaration
 import asyncio
 
+from v_crop_rag import config
 from v_crop_rag.ollama_client.embedding import OllamaEmbedding
 from v_crop_rag.ollama_client.ollama_wrapper_iut import OllamaWrapper
 
 
 async def main():
 
-    client = OllamaWrapper()
+    client = OllamaWrapper(base_url=config.OLLAMA_URL)
    
     # client = OllamaWrapper(base_url="http://localhost:11434")
 
     embedding_model = OllamaEmbedding(
         client=client,
-        model="embeddinggemma",
+        model=config.EMBEDDING_MODEL,
     )
 
     vector = await embedding_model.embed(
