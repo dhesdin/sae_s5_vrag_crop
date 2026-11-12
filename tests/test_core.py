@@ -8,6 +8,8 @@ from v_crop_rag.service.core import index_image
 from v_crop_rag.service.parsing import VLMResponseParsingError
 from v_crop_rag.service.schemas import BoundingBox, DetectedObject, ImageDescription
 from v_crop_rag.storage.base import BaseVectorIndex
+from v_crop_rag.ollama_client.ollama_wrapper_iut import OllamaConnectionError
+from v_crop_rag.service.core import index_dataset, index_image
 
 
 class EmbeddingError(Exception):
@@ -293,3 +295,37 @@ async def test_empty_background_is_skipped():
         ids_written.append(entry[0])
 
     assert ids_written == ["photo:0", "photo:main"]
+
+class DownVLM(BaseVLM):
+    """Fake VLM: the Ollama server is down."""
+
+    async def generate(self, prompt, image):
+        raise OllamaConnectionError("server down")
+
+
+# every image is indexed and listed, nothing fails
+@pytest.mark.asyncio
+async def test_index_dataset_indexes_every_image():
+    vlm = FakeVLM(build_description_json())
+
+    result = await index_dataset([Path("a.jpg"), Path("b.jpg")], vlm, FakeEmbedding(), FakeIndex())
+
+    assert result == {"indexed": ["a.jpg", "b.jpg"], "failed": []}
+
+
+# a bad VLM answer does not stop the run: both images are listed as failed
+@pytest.mark.asyncio
+async def test_index_dataset_continues_after_bad_answer():
+    vlm = FakeVLM("not json at all")
+
+    result = await index_dataset([Path("a.jpg"), Path("b.jpg")], vlm, FakeEmbedding(), FakeIndex())
+
+    assert result["indexed"] == []
+    assert [name for name, reason in result["failed"]] == ["a.jpg", "b.jpg"]
+
+
+# a server error is not caught: it stops the whole run
+@pytest.mark.asyncio
+async def test_index_dataset_stops_on_connection_error():
+    with pytest.raises(OllamaConnectionError):
+        await index_dataset([Path("a.jpg")], DownVLM(), FakeEmbedding(), FakeIndex())
