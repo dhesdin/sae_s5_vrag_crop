@@ -4,12 +4,11 @@ import pytest
 from chromadb.api.types import validate_metadata
 
 from v_crop_rag.ollama_client.base import BaseEmbedding, BaseVLM
-from v_crop_rag.service.core import index_image
+from v_crop_rag.ollama_client.ollama_wrapper_iut import OllamaConnectionError
+from v_crop_rag.service.core import index_dataset, index_image
 from v_crop_rag.service.parsing import VLMResponseParsingError
 from v_crop_rag.service.schemas import BoundingBox, DetectedObject, ImageDescription
 from v_crop_rag.storage.base import BaseVectorIndex
-from v_crop_rag.ollama_client.ollama_wrapper_iut import OllamaConnectionError
-from v_crop_rag.service.core import index_dataset, index_image
 
 
 class EmbeddingError(Exception):
@@ -295,6 +294,7 @@ async def test_empty_background_is_skipped():
         ids_written.append(entry[0])
 
     assert ids_written == ["photo:0", "photo:main"]
+
 
 class DownVLM(BaseVLM):
     """Fake VLM: the Ollama server is down."""
