@@ -398,3 +398,63 @@ async def test_search_asks_index_for_k_times_elements_per_image():
     await search_image("vélo", FakeEmbedding(), index, k=3)
 
     assert index.query_calls[0][1] == 3 * ELEMENTS_PER_IMAGE
+
+
+# a query that is not a string is rejected before any embedding or index call
+@pytest.mark.asyncio
+async def test_search_rejects_non_string_query():
+    embedding = FakeEmbedding()
+    index = FakeIndex()
+
+    with pytest.raises(TypeError):
+        await search_image(123, embedding, index)
+
+    assert embedding.texts == []
+    assert index.query_calls == []
+
+
+# an empty or blank query is rejected before any embedding or index call
+@pytest.mark.asyncio
+async def test_search_rejects_blank_query():
+    embedding = FakeEmbedding()
+    index = FakeIndex()
+
+    with pytest.raises(ValueError):
+        await search_image("   ", embedding, index)
+
+    assert embedding.texts == []
+    assert index.query_calls == []
+
+
+# a bool is not accepted as k, even though isinstance(True, int) is True in Python
+@pytest.mark.asyncio
+async def test_search_rejects_bool_k():
+    embedding = FakeEmbedding()
+    index = FakeIndex()
+
+    with pytest.raises(TypeError):
+        await search_image("vélo", embedding, index, k=True)
+
+    assert index.query_calls == []
+
+
+# k below 1 is rejected
+@pytest.mark.asyncio
+async def test_search_rejects_k_below_one():
+    embedding = FakeEmbedding()
+    index = FakeIndex()
+
+    with pytest.raises(ValueError):
+        await search_image("vélo", embedding, index, k=0)
+
+    assert index.query_calls == []
+
+
+# a query longer than 100 characters is cut before it is embedded
+@pytest.mark.asyncio
+async def test_search_truncates_long_query():
+    embedding = FakeEmbedding()
+
+    await search_image("a" * 150, embedding, FakeIndex())
+
+    assert len(embedding.texts[0]) == 100
