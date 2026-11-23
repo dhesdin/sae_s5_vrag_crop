@@ -1,7 +1,8 @@
+import time
 from pathlib import Path
 
 from v_crop_rag.ollama_client.base import BaseEmbedding, BaseVLM
-from v_crop_rag.service.parsing import parse_vlm_response
+from v_crop_rag.service.parsing import VLMResponseParsingError, parse_vlm_response
 from v_crop_rag.service.prompts import build_extraction_prompt
 from v_crop_rag.service.utils import bbox_to_metadata, image_to_metadata, object_to_text
 from v_crop_rag.storage.base import BaseVectorIndex
@@ -89,3 +90,40 @@ async def index_image(image_path: Path, vlm: BaseVLM, embedding: BaseEmbedding, 
         index.add(id=entry_id, vector=vector, metadata=metadata)
 
     return len(entries)
+
+
+async def index_dataset(image_paths: list[Path], vlm: BaseVLM, embedding: BaseEmbedding, index: BaseVectorIndex) -> dict:
+    """Index every image, skip the ones the VLM answers badly, stop on any other error.
+    Args:
+    image_paths: list[Path]
+        List of image file paths to index.
+    vlm: BaseVLM
+        The visual language model used to extract information from images.
+    embedding: BaseEmbedding
+        The embedding model used to generate vector representations of text.
+    index: BaseVectorIndex
+        The vector index where the embeddings will be stored.
+
+    Raises:
+        VLMResponseParsingError: If the VLM response cannot be parsed correctly.
+        ValueError: If there is an issue with the input data or embedding process.
+    Returns:
+        dict: A dictionary containing two keys:
+            "indexed": list of names of successfully indexed images.
+            "failed": list of tuples with the name and reason for each skipped image.
+    """
+    indexed = []  # names of the indexed images
+    failed = []  # (name, reason) of the skipped images
+
+    for image_path in image_paths:
+        start = time.perf_counter()
+        try:
+            await index_image(image_path=image_path, vlm=vlm, embedding=embedding, index=index)
+            indexed.append(image_path.name)
+            print(image_path.name, "indexed in", time.perf_counter() - start, "seconds")
+
+        except (VLMResponseParsingError, ValueError) as e:
+            e_truncate = str(e)[:200]
+            failed.append((image_path.name, e_truncate))  # 200 for truncating long error messages
+            print(image_path.name, "FAILED", e_truncate)
+    return {"indexed": indexed, "failed": failed}
