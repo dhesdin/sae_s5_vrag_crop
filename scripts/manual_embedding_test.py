@@ -26,7 +26,8 @@ async def main():
     print("Premières valeurs :", vector[:10])
 
     vector1 = await embedding_model.embed("Un vélo rouge")
-    vector2 = await embedding_model.embed("Un vélo noir")
+    vector2 = await embedding_model.embed("Un vélo rouge   ")
+
 
     print(len(vector1))
     print(len(vector2))
