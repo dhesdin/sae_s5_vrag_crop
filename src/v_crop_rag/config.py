@@ -16,3 +16,8 @@ load_dotenv(ROOT_DIR / ".env")
 OLLAMA_URL = os.getenv("VCROP_OLLAMA_URL", "http://10.22.28.190:11434")
 VLM_MODEL = os.getenv("VCROP_VLM_MODEL", "qwen3-vl:8b-instruct")
 EMBEDDING_MODEL = os.getenv("VCROP_EMBEDDING_MODEL", "embeddinggemma:latest")
+
+
+# ======== PARAMETERS ======== #
+ELEMENTS_PER_IMAGE = 10
+MAX_QUERY_LENGTH = 100
