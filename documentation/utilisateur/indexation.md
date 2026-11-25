@@ -1,45 +1,82 @@
 # Indexer un dossier d'images
 
-!!! warning "État d'avancement"
-    Le pipeline d'indexation complet n'est pas encore implémenté. Cette page
-    documente ce qui existe réellement aujourd'hui, et ce qui reste à faire.
+L'indexation se fait **une seule fois par image**. C'est l'étape lente : le
+VLM doit regarder chaque photo et la décrire.
 
-## Ce qui existe aujourd'hui
+## Lancer l'indexation du dataset
 
-Le point de départ de l'indexation est le listing du dossier `dataset/` par
-`list_dataset_images()` (`src/v_crop_rag/service/dataset_loader.py`) :
+Depuis la racine du dépôt, sur le réseau de l'IUT :
 
-- parcourt un dossier (par défaut `dataset/` à la racine du projet),
-- ne garde que les fichiers dont l'extension est `.jpg`, `.jpeg` ou `.png`,
-- retourne la liste triée des chemins, **sans charger le contenu des images
-  en mémoire** - seul le chemin est manipulé à ce stade.
-
-```python
-from v_crop_rag.service.dataset_loader import list_dataset_images
-
-images = list_dataset_images("dataset")
-# [PosixPath('dataset/a.png'), PosixPath('dataset/b.jpg'), ...]
+```bash
+python scripts/manual_dataset_index.py
 ```
 
-Le prompt d'extraction VLM ([conçu et testé](../technique/choix-techniques.md))
-existe également (`build_extraction_prompt()` dans `service/prompts.py`) mais
-n'est pas encore branché sur un appel réel image par image dans un pipeline.
+Le script liste les images de `dataset/`, les indexe une par une et écrit
+l'index ChromaDB dans `data/chroma` (collection `crop_embeddings`). Il
+affiche une ligne par image avec sa durée, puis un bilan :
 
-## Ce qu'il reste à faire
+```text
+beach_0.jpg indexed in 49.4 seconds
+...
+Indexed: 30
+Failed: []
+Total time: 1552.6 seconds
+```
 
-L'orchestration complète de l'indexation n'est pas encore codée
-(`service/core.py` est vide à ce stade). Elle est prévue pour, pour chaque
-image listée par `list_dataset_images()` :
+!!! note "Compter environ 26 minutes"
+    Sur le serveur de l'IUT, les 30 images ont pris 1552,6 s, soit 51,8 s
+    par image en moyenne (entre 35 et 73 s). Sortie complète :
+    `docs/essais/essai-3-index-dataset.md`.
 
-1. appeler le VLM (`BaseVLM.generate`, fourni par le Bloc B via
-   `OllamaVLM`) avec le prompt d'extraction et l'image,
-2. parser et valider la réponse JSON du VLM contre le schéma
-   [`ImageDescription`](../technique/schema-donnees.md) (avec parsing
-   défensif : réponse non JSON, champs inattendus, etc.),
-3. calculer un embedding par élément détecté (`BaseEmbedding.embed`, fourni
-   par le Bloc B via `OllamaEmbedding`),
-4. stocker le résultat (description + embeddings) dans le stockage vectoriel
-   (Bloc B).
+!!! warning "Index existant"
+    Si `data/chroma` existe déjà, le script s'arrête. C'est voulu : il n'y a
+    pas encore de reprise ni de mise à jour, et mélanger deux passages du
+    VLM sur la même image donnerait un index incohérent. Pour repartir de
+    zéro, supprimez le dossier `data/chroma`.
 
-Cette page sera mise à jour avec la commande / fonction réelle d'indexation
-dès que ce pipeline sera implémenté.
+## Ce qui se passe pour chaque image
+
+C'est la fonction `index_image` (`src/v_crop_rag/service/core.py`) qui fait
+le travail :
+
+1. le VLM reçoit l'image et le prompt d'extraction, et répond en JSON ;
+2. la réponse est vérifiée par le parsing défensif et convertie en
+   [`ImageDescription`](../technique/schema-donnees.md) ;
+3. un embedding est calculé pour le décor, pour chaque objet détecté et pour
+   le sujet principal ;
+4. une fois **tous** les embeddings calculés, les entrées sont écrites dans
+   l'index, le sujet principal en dernier.
+
+Une image donne en général une dizaine d'entrées (11 mesurées sur
+`market_0.jpg`). Le détail de ce qui est stocké est sur la page
+[Stockage vectoriel](../technique/stockage.md).
+
+## Quand une image échoue
+
+`index_dataset` parcourt la liste et applique une règle simple :
+
+- **réponse du VLM inutilisable** (JSON invalide, champ manquant, sujet
+  principal vide) : l'image est sautée, notée dans `failed` avec la raison,
+  et la boucle continue ;
+- **toute autre erreur** (serveur injoignable, timeout, erreur d'embedding) :
+  l'indexation s'arrête, car le problème touchera aussi les images
+  suivantes.
+
+Sur l'essai complet, aucune image n'a été sautée.
+
+## Utiliser les fonctions depuis Python
+
+```python
+from pathlib import Path
+
+from v_crop_rag.service.core import index_dataset
+from v_crop_rag.service.dataset_loader import list_dataset_images
+
+images = list_dataset_images(Path("dataset"))   # .jpg, .jpeg, .png, triés
+result = await index_dataset(images, vlm, embedding, index)
+# {"indexed": ["beach_0.jpg", ...], "failed": [("nom.jpg", "raison"), ...]}
+```
+
+`vlm`, `embedding` et `index` sont les adaptateurs du Bloc B (`OllamaVLM`,
+`OllamaEmbedding`, `ChromaVectorIndex`). Le script
+`scripts/manual_dataset_index.py` montre comment les construire.
