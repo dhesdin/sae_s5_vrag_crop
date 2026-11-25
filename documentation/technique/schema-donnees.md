@@ -78,3 +78,11 @@ Le schéma est couvert par `tests/test_schemas.py` :
   `bounding_box` à `None`),
 - `BoundingBox` : coordonnées négatives, largeur/hauteur nulles ou négatives
   rejetées ; `x=0`/`y=0` acceptés.
+
+## Ce que deviennent ces champs dans l'index
+
+Une `ImageDescription` n'est pas stockée telle quelle. Elle est découpée en
+entrées : une pour `background`, une par `DetectedObject` (texte
+`label couleur état`) et une pour `main_subject`. La `position` et la
+`bounding_box` ne sont pas embeddées, elles restent en métadonnées. Détail
+sur la page [Stockage vectoriel](stockage.md).
