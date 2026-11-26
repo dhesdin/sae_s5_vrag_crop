@@ -1,7 +1,7 @@
 import asyncio
-from math import sqrt
 import tempfile
 import time
+from math import sqrt
 from pathlib import Path
 
 from v_crop_rag.ollama_client.embedding import OllamaEmbedding

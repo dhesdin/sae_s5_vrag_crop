@@ -12,12 +12,20 @@ theme:
   features:
     - navigation.tabs
     - search.suggest
+    - content.code.copy
 
 markdown_extensions:
   - admonition
   - pymdownx.details
+  - tables
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
 
 nav:
+  - Accueil: index.md
   - Documentation Utilisateur:
       - Installation & lancement: utilisateur/installation.md
       - Indexer un dossier d'images: utilisateur/indexation.md
@@ -29,5 +37,6 @@ nav:
       - Schéma de données: technique/schema-donnees.md
       - Choix techniques: technique/choix-techniques.md
       - Stockage vectoriel: technique/stockage.md
+      - Essais et mesures: technique/essais.md
       - Génération et déploiement: technique/generation-deploiement.md
       - Déploiement applicatif (Docker): technique/deploiement.md

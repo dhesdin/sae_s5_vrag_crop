@@ -258,8 +258,6 @@ la branche `dhesdin/index-single-image`, non mergée à ce stade car il manque t
 
 ### Difficultés rencontrées
 
-### Difficultés rencontrées
-
 - Format des métadonnées attendu par ChromaDB : j'ai d'abord pensé envoyer la
   bounding box telle quelle, donc un dict (ou un objet) imbriqué dans le dict de
   métadonnées. Chroma attend des métadonnées plates, avec des valeurs scalaires
@@ -279,7 +277,7 @@ la branche `dhesdin/index-single-image`, non mergée à ce stade car il manque t
 ### Décisions techniques
 
 - Texte embeddé d'un objet : `label`, `color`, `state`. La position n'y est pas : elle
-  est relative à l'image (« centre droit »), ce n'est pas du vocabulaire de requête.
+  est relative à l'image (" centre droit "), ce n'est pas du vocabulaire de requête.
   Elle reste en métadonnée pour l'affichage. Hypothèse non encore mesurée : à valider
   sur des requêtes de test.
 - Un embedding distinct par élément, conformément à la fiche : sujet principal et décor
@@ -310,3 +308,150 @@ la branche `dhesdin/index-single-image`, non mergée à ce stade car il manque t
 - Câblage de `scripts/manual_index_test.py` et essais réels (latence, dimension du
   vecteur, relance sur la même image).
 - Boucle sur le dataset et cache, puis recherche et ranking (A8).
+
+
+---
+
+## Séances du 20/10/2026 au 12/11/2026
+
+Durée: 15H
+
+### Contexte du travail
+
+Suite de A6/A7 : `index_image` doit passer en asynchrone (les adaptateurs de Frédéric
+sont asynchrones depuis le 11/10), être testé avec de faux modèles, essayé sur le
+vrai serveur de l'IUT, puis étendu à tout un dossier (`index_dataset`). Entre-temps :
+retour de la prof (30/10) et audit automatique (01/11).
+
+### Ce qui a été fait
+
+- 20/10 : `index_image` passé en asynchrone. `tests/test_core.py` avec faux VLM, faux
+  embedder et faux index asynchrones (12 tests).
+- 09/11 : branche `dhesdin/index-single-image` poussée, 124 tests au
+  `make test`.
+- 10/11 : premier essai réel sur le serveur IUT. `scripts/manual_index_test.py`
+  réécrit en asynchrone, sortie versionnée dans `docs/essais/`.
+- 12/11 : `index_image` fusionné sur main (PR #19). `index_dataset` écrit : boucle sur
+  les images, une ligne par image avec sa durée, retourne `{"indexed": [...],
+  "failed": [(nom, raison)]}`. 3 tests (15 tests dans `test_core.py`.
+
+### Mesures réelles (serveur IUT, 10/11/2026, une seule image : market_0.jpg)
+
+- embeddinggemma : dimension 768, norme 0,9999999 (donc distance L2 et cosinus
+  classent pareil).
+- VLM : 24 s par image. Premier passage : `ReadTimeout` à 60 s (timeout par défaut du
+  wrapper trop court), remonté comme `OllamaConnectionError`.
+- `index_image` : 11 entrées en 26 s. Relance : 8 entrées (le VLM n'est pas
+  déterministe), mais distances identiques sur les ids déjà présents : Chroma semble
+  ignorer un `add` sur un id existant.
+- bbox : 1 objet sur 9 en possède une. Unité probablement en pixels (constat visuel sur
+  une seule bbox, non confirmé).
+- Requête "Des pastèques verte et mûre" : melon d'eau au rang 6, meilleure distance
+  0,77. Une seule requête, aucune conclusion.
+
+### Difficultés rencontrées
+
+- Passage en asynchrone : les faux modèles des tests ont dû être réécrits en
+  asynchrone.
+- CI rouge sur main après le merge de la PR #19 : imports de `tests/test_core.py` mal
+  triés. Corrigé par `dhesdin/fix-test-imports`, CI verte sur la PR.
+- Timeout du wrapper (60 s) trop court au premier appel du VLM : relevé à 300 s dans le
+  script d'essai.
+
+### Décisions techniques
+
+- `index_dataset` saute une image dont la réponse du VLM est inexploitable
+  (`VLMResponseParsingError`), mais laisse remonter `OllamaConnectionError` : si le
+  serveur est injoignable, continuer sur les images suivantes n'a pas de sens.
+- Appels séquentiels (pas de `asyncio.gather`) : un seul serveur Ollama partagé, le
+  parallélisme n'apporterait rien de mesuré et compliquerait les erreurs.
+- Position hors du texte embeddé : décision du 09/10 maintenue, hypothèse toujours non
+  comparée pour l'instant pas la priorité.
+
+---
+
+## Séances du 13/11/2026 au 25/11/2026
+
+Durée: 13H
+
+### Contexte du travail
+
+Rendre la recherche utilisable et mesurée (sprint 3) : `search_image`, indexation des
+30 images, évaluation sur 10 requêtes, contrat de réponse pour l'API.
+
+### Ce qui a été fait
+
+- 13/11 : `search_image(query, embedding, index, k=5)` écrite dans `service/core.py` :
+  gardes, embedding de la requête, `index.query` avec `k * ELEMENTS_PER_IMAGE` éléments,
+  regroupement par image (élément le plus proche), tri par distance, coupe à k. Une
+  ligne par image : `{image, distance, matched}`. Constante `ELEMENTS_PER_IMAGE = 10`
+  ajoutée dans `config.py` avec l'accord de Frédéric.
+- 23-25/11 : 9 tests de `search_image` (une ligne par image, élément le plus proche
+  conservé, coupe à k, `k * ELEMENTS_PER_IMAGE` demandé à l'index, gardes de type,
+  requête vide, k invalide, bool refusé, troncature). 136 tests au `make test`, CI
+  verte, merge sur main.
+- Indexation des 30 images sur le serveur IUT (`scripts/manual_dataset_index.py`,
+  sortie dans `docs/essais/essai-3-index-dataset.md`) : 30 indexées, 0 échec,
+  1552,6 s au total, soit 51,8 s par image (min 35,2 s, max 73,1 s). L'estimation de
+  départ (environ 13 minutes) était fausse : le VLM met deux fois plus de temps que sur
+  l'image unique mesurée le 10/11.
+- Évaluation (`scripts/manual_eval_search.py`, `docs/essais/essai-4-evaluation.md`) :
+  10 requêtes écrites depuis `dataset/ground_truth.json`, K = 3. L'image attendue est
+  dans le top 3 pour 9 requêtes sur 10. Temps par requête : environ 1,7 s pour la
+  première (démarrage à froid), 0,12 à 0,28 s ensuite.
+- Diagnostics des limites (`essai-5-variantes-vocabulaire.md`,
+  `essai-6-diagnostic-lampadaire.md`) :
+  - " un scooter " : problème de vocabulaire. " un motocycle " retrouve les 2 images
+    attendues sur 2.
+  - " un réverbère " : échec non expliqué. " un lampadaire " échoue aussi, " un
+    lampadaire noir " place l'image attendue au rang 1 (distance 0,489). Recherche du
+    texte exact indexé : distance 0,0 et rang 1, donc le pipeline fonctionne. Hypothèse
+    (la couleur fait partie du texte indexé) non testée, 2 cas seulement.
+  - Faux positifs récurrents : workbench_1 revient 6 fois et desktop_0 4 fois dans les
+    résultats de l'évaluation. Aucun seuil de distance exploitable mesuré.
+
+### Difficultés rencontrées
+
+- Premier lancement de l'indexation : `.env` surchargeait le modèle (`qwen3-vl:2b-instruct`
+  introuvable, erreur 404). Corrigé dans `.env` (modèle 8b). Le dossier `data/chroma`
+  avait déjà été créé avant l'échec : suppression nécessaire avant la relance (le
+  script refuse de réutiliser un index existant).
+- Garde du script d'évaluation inversée (`if not CHROMA_PATH.exists()`) et imports
+  parasites ajoutés par l'éditeur : repérés en relecture.
+- Un premier lancement du script d'évaluation a exécuté un ancien contenu (test
+  d'index dans un dossier temporaire) : `data/chroma` n'avait pas été touché, fichier
+  remplacé.
+- Diagnostic erroné de ma part sur " un réverbère " (je l'avais d'abord attribué au
+  vocabulaire) : " un lampadaire " échoue aussi
+- Erreur de branche : j'ai commité scripts et essais directement sur main sans m'en
+  apercevoir au début. Choix assumé ensuite pour ces petits fichiers (pas de code de
+  service), mais c'est une entorse à la règle une branche par tâche.
+
+### Décisions techniques
+
+- Pas de VLM à la requête : le texte de l'utilisateur est embeddé par le même modèle
+  (embeddinggemma). Le VLM ne sert qu'à l'indexation. Pas de reformulation ni de
+  re-ranking (extension possible, hors périmètre).
+- `search_image` renvoie des images, pas des éléments : `distance` est celle de
+  l'élément le plus proche de l'image, `matched` le texte de cet élément. Pas de
+  vignettes : Mathys construit le chemin depuis le dossier dataset.
+- `k * ELEMENTS_PER_IMAGE` éléments demandés à Chroma, car une image produit une dizaine
+  d'entrées (11 mesurées sur market_0.jpg). Le 10 reste une hypothèse : le nombre de
+  doublons d'image n'a pas été compté sur les 10 requêtes.
+- Requête tronquée à 100 caractères (une requête longue dilue le vecteur, les éléments
+  indexés sont courts). Troncature silencieuse pour l'appelant.
+- Distance Chroma par défaut (L2 au carré) : suffisant ici, vecteurs de norme 1, même
+  classement que le cosinus. Le cosinus explicite est demandé à Frédéric.
+- Évaluation limitée à 10 requêtes écrites par moi : petit échantillon, à présenter
+  comme tel. Pas de seuil de distance : l'interface doit afficher un rang, pas un
+  pourcentage de similarité.
+- Limite connue, non traitée (hors périmètre de la semaine) : sensibilité aux
+  synonymes (vocabulaire du VLM contre vocabulaire de la requête).
+
+### Points ouverts
+
+- Contrat de réponse `{image, distance, matched}` à valider avec Mathys.
+- Frédéric : `exists(id)`, suppression par image ou upsert, métrique cosinus, renommer
+  `VectoreSearchResult` (en cours).
+- Préfixe de tâche d'embeddinggemma côté requête : à vérifier dans la fiche du modèle
+  avant toute modification.

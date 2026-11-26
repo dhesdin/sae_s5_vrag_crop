@@ -3,12 +3,13 @@ from pathlib import Path
 import pytest
 from chromadb.api.types import validate_metadata
 
+from v_crop_rag.config import ELEMENTS_PER_IMAGE
 from v_crop_rag.ollama_client.base import BaseEmbedding, BaseVLM
 from v_crop_rag.ollama_client.ollama_wrapper_iut import OllamaConnectionError
-from v_crop_rag.service.core import index_dataset, index_image
+from v_crop_rag.service.core import index_dataset, index_image, search_image
 from v_crop_rag.service.parsing import VLMResponseParsingError
 from v_crop_rag.service.schemas import BoundingBox, DetectedObject, ImageDescription
-from v_crop_rag.storage.base import BaseVectorIndex
+from v_crop_rag.storage.base import BaseVectorIndex, VectoreSearchResult
 
 
 class EmbeddingError(Exception):
@@ -64,16 +65,27 @@ class FakeEmbedding(BaseEmbedding):
 
 
 class FakeIndex(BaseVectorIndex):
-    """Fake index: remembers every entry added; query is never used in these tests."""
+    """Fake index: remembers every entry added and every query, returns prepared results."""
 
-    def __init__(self):
+    def __init__(self, results=None):
+        if results is None:
+            results = []
+        self.results = results
         self.added = []
+        self.query_calls = []
 
     def add(self, id, vector, metadata):
         self.added.append((id, vector, metadata))
 
     def query(self, vector, k=5):
-        return []
+        self.query_calls.append((vector, k))
+        return self.results
+
+
+def make_result(entry_id, distance, image, text="un vélo rouge"):
+    """Build a search result the way the index returns it."""
+    metadata = {"image": image, "type": "object", "text": text}
+    return VectoreSearchResult(id=entry_id, distance=distance, metadata=metadata)
 
     def exists(self, id):
         return any(entry_id == id for entry_id, _, _ in self.added)
@@ -332,3 +344,120 @@ async def test_index_dataset_continues_after_bad_answer():
 async def test_index_dataset_stops_on_connection_error():
     with pytest.raises(OllamaConnectionError):
         await index_dataset([Path("a.jpg")], DownVLM(), FakeEmbedding(), FakeIndex())
+
+
+# two elements of the same image give a single result
+@pytest.mark.asyncio
+async def test_search_returns_one_result_per_image():
+    results = [
+        make_result("a:0", 0.2, "a.jpg"),
+        make_result("a:1", 0.4, "a.jpg"),
+        make_result("b:0", 0.5, "b.jpg"),
+    ]
+
+    found = await search_image("vélo", FakeEmbedding(), FakeIndex(results))
+
+    images = []
+    for row in found:
+        images.append(row["image"])
+    assert images == ["a.jpg", "b.jpg"]
+
+
+# the distance and the matched text come from the closest element of the image
+@pytest.mark.asyncio
+async def test_search_keeps_closest_element_of_each_image():
+    results = [
+        make_result("a:0", 0.2, "a.jpg", text="vélo rouge"),
+        make_result("a:1", 0.4, "a.jpg", text="casque noir"),
+    ]
+
+    found = await search_image("vélo", FakeEmbedding(), FakeIndex(results))
+
+    assert found == [{"image": "a.jpg", "distance": 0.2, "matched": "vélo rouge"}]
+
+
+# only k images are returned
+@pytest.mark.asyncio
+async def test_search_returns_at_most_k_images():
+    results = [
+        make_result("a:0", 0.1, "a.jpg"),
+        make_result("b:0", 0.2, "b.jpg"),
+        make_result("c:0", 0.3, "c.jpg"),
+    ]
+
+    found = await search_image("vélo", FakeEmbedding(), FakeIndex(results), k=2)
+
+    images = []
+    for row in found:
+        images.append(row["image"])
+    assert images == ["a.jpg", "b.jpg"]
+
+
+# the index is asked for k * ELEMENTS_PER_IMAGE elements, not k
+@pytest.mark.asyncio
+async def test_search_asks_index_for_k_times_elements_per_image():
+    index = FakeIndex()
+
+    await search_image("vélo", FakeEmbedding(), index, k=3)
+
+    assert index.query_calls[0][1] == 3 * ELEMENTS_PER_IMAGE
+
+
+# a query that is not a string is rejected before any embedding or index call
+@pytest.mark.asyncio
+async def test_search_rejects_non_string_query():
+    embedding = FakeEmbedding()
+    index = FakeIndex()
+
+    with pytest.raises(TypeError):
+        await search_image(123, embedding, index)
+
+    assert embedding.texts == []
+    assert index.query_calls == []
+
+
+# an empty or blank query is rejected before any embedding or index call
+@pytest.mark.asyncio
+async def test_search_rejects_blank_query():
+    embedding = FakeEmbedding()
+    index = FakeIndex()
+
+    with pytest.raises(ValueError):
+        await search_image("   ", embedding, index)
+
+    assert embedding.texts == []
+    assert index.query_calls == []
+
+
+# a bool is not accepted as k, even though isinstance(True, int) is True in Python
+@pytest.mark.asyncio
+async def test_search_rejects_bool_k():
+    embedding = FakeEmbedding()
+    index = FakeIndex()
+
+    with pytest.raises(TypeError):
+        await search_image("vélo", embedding, index, k=True)
+
+    assert index.query_calls == []
+
+
+# k below 1 is rejected
+@pytest.mark.asyncio
+async def test_search_rejects_k_below_one():
+    embedding = FakeEmbedding()
+    index = FakeIndex()
+
+    with pytest.raises(ValueError):
+        await search_image("vélo", embedding, index, k=0)
+
+    assert index.query_calls == []
+
+
+# a query longer than 100 characters is cut before it is embedded
+@pytest.mark.asyncio
+async def test_search_truncates_long_query():
+    embedding = FakeEmbedding()
+
+    await search_image("a" * 150, embedding, FakeIndex())
+
+    assert len(embedding.texts[0]) == 100

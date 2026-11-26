@@ -1,6 +1,7 @@
 import time
 from pathlib import Path
 
+from v_crop_rag.config import ELEMENTS_PER_IMAGE, MAX_QUERY_LENGTH
 from v_crop_rag.ollama_client.base import BaseEmbedding, BaseVLM
 from v_crop_rag.service.parsing import VLMResponseParsingError, parse_vlm_response
 from v_crop_rag.service.prompts import build_extraction_prompt
@@ -127,3 +128,61 @@ async def index_dataset(image_paths: list[Path], vlm: BaseVLM, embedding: BaseEm
             failed.append((image_path.name, e_truncate))  # 200 for truncating long error messages
             print(image_path.name, "FAILED", e_truncate)
     return {"indexed": indexed, "failed": failed}
+
+
+# REQUEST BY USER
+async def search_image(query: str, embedding: BaseEmbedding, index: BaseVectorIndex, k: int = 5) -> list[dict]:
+    """Search the indexed images that best match a text query.
+
+    The index stores one entry per element (background, main subject, objects), so
+    more entries than k are requested, then grouped by image.
+
+    Args:
+        query: Text to search for. Truncated to MAX_QUERY_LENGTH characters.
+        embedding: Embedding model used to vectorize the query.
+        index: Vector index to search in.
+        k: Maximum number of distinct images to return.
+
+    Raises:
+        TypeError: If query is not a string, or k is not an integer.
+        ValueError: If query is empty or only whitespace, or k is lower than 1.
+
+    Returns:
+        list[dict]: At most k dicts sorted by ascending distance, one per image, with the keys
+            "image" (file name), "distance" (of its closest element) and "matched" (text of that element).
+    """
+    # ==== GUARD CLAUSES ==== #
+    if not isinstance(query, str):
+        raise TypeError("query must be a string")
+
+    query = query.strip()
+    if not query:
+        raise ValueError("query is required")
+    # bool is a subclass of int so it would pass the check w/o it
+    if not isinstance(k, int) or isinstance(k, bool):
+        raise TypeError("k must be an integer")
+
+    if k < 1:
+        raise ValueError("k must be at least 1")
+
+    # the UI limits the length too this keeps the embedding input short to avoid the long queries and the dissipation
+    query = query[:MAX_QUERY_LENGTH]
+
+    # SEARCH
+    query_vector = await embedding.embed(text=query)
+    results = index.query(vector=query_vector, k=k * ELEMENTS_PER_IMAGE)
+
+    # GROUP BY IMAGE
+    # results are sorted by ascending distance, so the first entry seen for an image is its best one
+    best_by_image: dict[str, dict] = {}
+    for result in results:
+        image_name = result.metadata["image"]
+        if image_name not in best_by_image:
+            best_by_image[image_name] = {
+                "image": image_name,
+                "distance": result.distance,
+                "matched": result.metadata["text"],
+            }
+
+    sorted_images = sorted(best_by_image.values(), key=lambda x: x["distance"])  # trash the first key by keeping only values and sorted by dist
+    return sorted_images[:k]
