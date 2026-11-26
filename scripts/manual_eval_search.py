@@ -2,7 +2,7 @@ import asyncio
 import time
 from pathlib import Path
 
-from v_crop_rag.config import EMBEDDING_MODEL
+from v_crop_rag.config import EMBEDDING_MODEL, OLLAMA_URL
 from v_crop_rag.ollama_client.embedding import OllamaEmbedding
 from v_crop_rag.ollama_client.ollama_wrapper_iut import OllamaWrapper
 from v_crop_rag.service.core import search_image
@@ -27,7 +27,7 @@ QUERIES = [
 ]
 
 async def main() -> None:
-    client = OllamaWrapper(timeout_s=300)
+    client = OllamaWrapper(base_url=OLLAMA_URL, timeout_s=300)
 
     if not await client.is_server_running():
         raise SystemExit("Ollama server is not running")
