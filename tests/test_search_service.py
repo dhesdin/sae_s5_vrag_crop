@@ -45,4 +45,4 @@ def test_build_dependencies_raises_when_index_missing(monkeypatch, tmp_path):
     search_service._build_dependencies.cache_clear() # Clear the cache to force rebuilding dependencies
 
     with pytest.raises(FileNotFoundError):
-        search_service._build_dependencies()
+        search_service._build_dependencies() 
