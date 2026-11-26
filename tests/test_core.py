@@ -389,7 +389,19 @@ async def test_search_keeps_closest_element_of_each_image():
 
     found = await search_image("vélo", FakeEmbedding(), FakeIndex(results))
 
-    assert found == [{"image": "a.jpg", "distance": 0.2, "matched": "vélo rouge"}]
+    assert found == [{"image": "a.jpg", "distance": 0.2, "similarity": 0.9, "matched": "vélo rouge"}]
+
+
+# the similarity comes from the index as is: search_image does not recompute it
+@pytest.mark.asyncio
+async def test_search_forwards_similarity_from_index():
+    results = [
+        VectoreSearchResult(id="a:0", distance=0.2, similarity=0.42, metadata={"image": "a.jpg", "type": "object", "text": "vélo"}),
+    ]
+
+    found = await search_image("vélo", FakeEmbedding(), FakeIndex(results))
+
+    assert found[0]["similarity"] == 0.42
 
 
 # only k images are returned

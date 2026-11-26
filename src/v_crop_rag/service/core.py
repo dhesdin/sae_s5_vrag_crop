@@ -161,7 +161,8 @@ async def search_image(query: str, embedding: BaseEmbedding, index: BaseVectorIn
 
     Returns:
         list[dict]: At most k dicts sorted by ascending distance, one per image, with the keys
-            "image" (file name), "distance" (of its closest element) and "matched" (text of that element).
+            "image" (file name), "distance" (of its closest element), "similarity" (relevance score of that element, 1 = same) 
+            and "matched" (text of that element).
     """
     # ==== GUARD CLAUSES ==== #
     if not isinstance(query, str):
@@ -193,6 +194,7 @@ async def search_image(query: str, embedding: BaseEmbedding, index: BaseVectorIn
             best_by_image[image_name] = {
                 "image": image_name,
                 "distance": result.distance,
+                "similarity": result.similarity,
                 "matched": result.metadata["text"],
             }
 
