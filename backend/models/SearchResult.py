@@ -4,8 +4,8 @@ from pydantic import BaseModel
 class SearchResult(BaseModel):
     """Une image trouvée par la recherche.
 
-    Le front affiche le rang, pas un pourcentage : avec un k élevé on récupère
-    aussi des images sans rapport, et la distance n'a pas de sens en absolu.
+    Le front affiche, pour chaque image : le rang (1 = meilleure), le score
+    similarity brut (ex. 0,73, jamais converti en pourcentage) et le texte matched.
     """
 
     rank: int
