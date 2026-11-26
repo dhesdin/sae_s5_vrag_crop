@@ -36,3 +36,5 @@ class ResponsesRouter(APIRouter):
             "message": f"Getting response with ID {response_id}",
             "content": [response]
         }
+
+    
