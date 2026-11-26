@@ -11,6 +11,8 @@ dependencies = [
     "chromadb>=1.5.9,<1.6",
     "httpx",
     "python-dotenv",
+    "fastapi>=0.142,<0.143",
+    "uvicorn>=0.54,<0.55",
 ]
 
 [tool.setuptools.packages.find]

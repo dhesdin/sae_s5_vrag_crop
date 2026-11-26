@@ -2,6 +2,7 @@
     
 from fastapi import FastAPI
 
+from backend.routers.requestsRouter import RequestsRouter
 from backend.routers.responsesRouter import ResponsesRouter
 
 
@@ -14,6 +15,7 @@ class App(FastAPI):
 
     def _register_routers(self) -> None:
         self.include_router(ResponsesRouter())
+        self.include_router(RequestsRouter())
 
     def _register_endpoints(self) -> None:
         self.get("/", response_model=dict)(self.root)

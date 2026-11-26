@@ -1,7 +1,8 @@
-from enum import Enum
+from pydantic import BaseModel, Field
 
-from pydantic import BaseModel
 
-class Response(BaseModel):
-    id: int
-    content: str
+class Request(BaseModel):
+    """Requête de recherche envoyée par le front."""
+
+    query: str
+    k: int = Field(default=5, ge=1)
