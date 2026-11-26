@@ -165,6 +165,9 @@ def test_query_returns_vector_search_results():
         assert results[1].distance == 0.35
         assert results[1].metadata == {"label": "moto"}
 
+        assert results[0].similarity == pytest.approx(0.94)
+        assert results[1].similarity == pytest.approx(0.825)
+
 
 @pytest.mark.parametrize("invalid_vector", ["abc", (0.1, 0.2), 123, None])
 def test_query_reject_invalid_vector_type(invalid_vector):
@@ -253,6 +256,8 @@ def test_add_and_query_integration_with_chroma(tmp_path):
     assert results[0].id == "Object_B"
     assert results[0].distance == pytest.approx(0.0)
     assert results[0].metadata == {"label": "B"}
+
+    assert results[0].similarity == pytest.approx(1.0)
 
 
 def test_chroma_persists_data(tmp_path):
@@ -356,3 +361,15 @@ def test_add_same_id_replaces_entry(tmp_path):
     assert results[0].id == "test_0:0"
     assert results[0].metadata == {"label": "new"}
     assert results[0].distance == pytest.approx(0.0)
+
+
+@pytest.mark.parametrize(
+    "distance, expected_similarity",
+    [
+        (0.0, 1.0),  # identical vectors
+        (2.0, 0.0),  # perpendicular vectors (cos = 0)
+        (0.6431, 0.67845),  # measured on 26/11: "Un vélo rouge" / "Un vélo noir" (cos 0.678)
+    ],
+)
+def test_distance_to_similarity(distance, expected_similarity):
+    assert ChromaVectorIndex._distance_to_similarity(distance) == pytest.approx(expected_similarity)

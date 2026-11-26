@@ -9,8 +9,9 @@ def test_base_vector_index_cannot_be_instanciated():
 
 
 def test_vector_search_result_stores_values():
-    result = VectoreSearchResult(id="object_123", distance=0.51, metadata={"label": "test"})
+    result = VectoreSearchResult(id="object_123", distance=0.51, similarity=0.745, metadata={"label": "test"})
 
     assert result.id == "object_123"
     assert result.distance == 0.51
+    assert result.similarity == 0.745
     assert result.metadata == {"label": "test"}

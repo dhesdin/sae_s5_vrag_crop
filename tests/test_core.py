@@ -88,7 +88,7 @@ class FakeIndex(BaseVectorIndex):
 def make_result(entry_id, distance, image, text="un vélo rouge"):
     """Build a search result the way the index returns it."""
     metadata = {"image": image, "type": "object", "text": text}
-    return VectoreSearchResult(id=entry_id, distance=distance, metadata=metadata)
+    return VectoreSearchResult(id=entry_id, distance=distance, similarity=1 - distance / 2, metadata=metadata)
 
     def exists(self, id):
         return any(entry_id == id for entry_id, _, _ in self.added)
@@ -389,7 +389,19 @@ async def test_search_keeps_closest_element_of_each_image():
 
     found = await search_image("vélo", FakeEmbedding(), FakeIndex(results))
 
-    assert found == [{"image": "a.jpg", "distance": 0.2, "matched": "vélo rouge"}]
+    assert found == [{"image": "a.jpg", "distance": 0.2, "similarity": 0.9, "matched": "vélo rouge"}]
+
+
+# the similarity comes from the index as is: search_image does not recompute it
+@pytest.mark.asyncio
+async def test_search_forwards_similarity_from_index():
+    results = [
+        VectoreSearchResult(id="a:0", distance=0.2, similarity=0.42, metadata={"image": "a.jpg", "type": "object", "text": "vélo"}),
+    ]
+
+    found = await search_image("vélo", FakeEmbedding(), FakeIndex(results))
+
+    assert found[0]["similarity"] == 0.42
 
 
 # only k images are returned

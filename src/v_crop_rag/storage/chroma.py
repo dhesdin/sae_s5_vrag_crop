@@ -34,6 +34,16 @@ class ChromaVectorIndex(BaseVectorIndex):
         if not id.strip():
             raise ValueError("id is required")
 
+    @staticmethod
+    def _distance_to_similarity(distance: float) -> float:
+        """Convert a Chroma distance into a cosine similarity (1 = identical).
+
+        Chroma's default metric is the squared L2 distance. The embedding
+        vectors are normalized, so squared L2 = 2 - 2 * cos,
+        which gives cos = 1 - distance / 2.
+        """
+        return 1 - distance / 2
+
     def add(self, id: str, vector: list[float], metadata: dict[str, Any]) -> None:
         self._check_id(id)
 
@@ -78,7 +88,9 @@ class ChromaVectorIndex(BaseVectorIndex):
 
         list_objects = []
         for result_id, result_distance, result_metadata in zip(ids, distances, metadatas):
-            vector_result = VectoreSearchResult(id=result_id, distance=result_distance, metadata=result_metadata)
+            vector_result = VectoreSearchResult(
+                id=result_id, distance=result_distance, similarity=self._distance_to_similarity(result_distance), metadata=result_metadata
+            )
             list_objects.append(vector_result)
 
         return list_objects

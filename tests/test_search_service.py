@@ -25,7 +25,7 @@ async def test_search_images_returns_results_and_passes_k(monkeypatch):
 
     assert len(results) == 2
     assert results[0]["image"] == "market_0.jpg"
-    assert set(results[0].keys()) == {"image", "distance", "matched"}
+    assert set(results[0].keys()) == {"image", "distance", "similarity", "matched"}
     assert index.query_calls[0][1] == 3 * ELEMENTS_PER_IMAGE
 
 

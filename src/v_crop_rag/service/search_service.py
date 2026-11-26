@@ -50,7 +50,7 @@ async def search_images(query: str, k: int = 5) -> list[dict]:
     Returns:
         list[dict]: At most k results, sorted by increasing distance. Each result
             has the keys "image" (file name, e.g. "market_0.jpg"), "distance"
-            (float, smaller means closer) and "matched" (text of the closest
+            (float, smaller means closer) , "similarity" (float between 0 and 1, higher means closer) and "matched" (text of the closest
             element of the image).
 
     Raises:
