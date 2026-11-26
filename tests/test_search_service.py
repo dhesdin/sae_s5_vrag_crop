@@ -45,3 +45,12 @@ def test_build_dependencies_raises_when_index_missing(monkeypatch, tmp_path):
 
     with pytest.raises(FileNotFoundError):
         search_service._build_dependencies()
+
+
+def test_build_dependencies_raises_when_index_folder_is_empty(monkeypatch, tmp_path):
+    # Docker creates an empty folder when the mounted one does not exist
+    monkeypatch.setattr(search_service, "CHROMA_PATH", tmp_path)
+    search_service._build_dependencies.cache_clear()
+
+    with pytest.raises(FileNotFoundError):
+        search_service._build_dependencies()
