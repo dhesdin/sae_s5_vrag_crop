@@ -1,6 +1,6 @@
 from functools import cache
 
-from v_crop_rag.config import EMBEDDING_MODEL, ROOT_DIR
+from v_crop_rag.config import EMBEDDING_MODEL, OLLAMA_URL, ROOT_DIR
 from v_crop_rag.ollama_client.embedding import OllamaEmbedding
 from v_crop_rag.ollama_client.ollama_wrapper_iut import OllamaWrapper
 from v_crop_rag.service.core import search_image
@@ -26,7 +26,7 @@ def _build_dependencies() -> tuple[OllamaEmbedding, ChromaVectorIndex]:
         raise FileNotFoundError(f"No Chroma index in {CHROMA_PATH} (chroma.sqlite3 missing), run scripts/manual_dataset_index.py first")
 
     # build client (10 sec) bc w/o warmup we've got around ~2 secs for each request
-    client = OllamaWrapper(timeout_s=10)
+    client = OllamaWrapper(base_url=OLLAMA_URL, timeout_s=10)
 
     embedding = OllamaEmbedding(client=client, model=EMBEDDING_MODEL)
     index = ChromaVectorIndex(path=CHROMA_PATH, collection_name=COLLECTION_NAME)
