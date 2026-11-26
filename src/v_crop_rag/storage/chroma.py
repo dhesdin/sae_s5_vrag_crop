@@ -49,7 +49,8 @@ class ChromaVectorIndex(BaseVectorIndex):
         if not isinstance(metadata, dict):
             raise TypeError("metadata must be a dictionary")
 
-        self._collection.add(ids=[id], embeddings=[vector], metadatas=[metadata])
+        # upsert instead of add bacause Chroma add silently an id even it already exists
+        self._collection.upsert(ids=[id], embeddings=[vector], metadatas=[metadata])
 
     def query(self, vector: list[float], k: int = 5) -> list[VectoreSearchResult]:
 
