@@ -1,4 +1,3 @@
-
 import pytest
 
 from tests.test_core import FakeEmbedding, FakeIndex, make_result
@@ -8,9 +7,8 @@ from v_crop_rag.service import search_service
 
 # Replace search_service._build_dependencies with a temporary function during tests
 def _patch_dependencies(monkeypatch, embedding, index):
-    monkeypatch.setattr(
-        search_service, "_build_dependencies", lambda: (embedding, index)
-    )
+    monkeypatch.setattr(search_service, "_build_dependencies", lambda: (embedding, index))
+
 
 # Tests for the search_service module
 @pytest.mark.asyncio
@@ -39,10 +37,11 @@ async def test_search_images_does_not_catch_value_error(monkeypatch):
     with pytest.raises(ValueError):
         await search_service.search_images("   ")
 
+
 # Test for _build_dependencies when the index is missing
 def test_build_dependencies_raises_when_index_missing(monkeypatch, tmp_path):
     monkeypatch.setattr(search_service, "CHROMA_PATH", tmp_path / "missing")
-    search_service._build_dependencies.cache_clear() # Clear the cache to force rebuilding dependencies
+    search_service._build_dependencies.cache_clear()  # Clear the cache to force rebuilding dependencies
 
     with pytest.raises(FileNotFoundError):
-        search_service._build_dependencies() 
+        search_service._build_dependencies()
