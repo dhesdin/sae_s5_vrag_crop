@@ -17,14 +17,14 @@ def _build_dependencies() -> tuple[OllamaEmbedding, ChromaVectorIndex]:
     The results is stored in the cache, build once then reused
 
     Raises:
-        FileNotFoundError: If the Chroma vector index path does not exist.
+        FileNotFoundError: If the Chroma index file (chroma.sqlite3) is missing in the expected path.
 
     Returns:
         tuple[OllamaEmbedding, ChromaVectorIndex]: The embedding model and the vector index.
     """
     # VErif paths
-    if not CHROMA_PATH.exists():
-        raise FileNotFoundError(f"{CHROMA_PATH} not found, run scripts/manual_dataset_index.py first")
+    if not (CHROMA_PATH / "chroma.sqlite3").exists():
+        raise FileNotFoundError(f"No Chroma index in {CHROMA_PATH} (chroma.sqlite3 missing), run scripts/manual_dataset_index.py first")
 
     # build client (10 sec) bc w/o warmup we've got around ~2 secs for each request
     client = OllamaWrapper(timeout_s=10)
