@@ -20,9 +20,15 @@ theme:
         name: Mode clair
 
   features:
-    - navigation.tabs
-    - search.suggest
-    - content.code.copy
+  - navigation.tabs
+  - navigation.tabs.sticky
+  - navigation.sections
+  - navigation.top
+  - search.suggest
+  - content.code.copy
+
+extra_css:
+  - stylesheets/extra.css
 
 markdown_extensions:
   - admonition
