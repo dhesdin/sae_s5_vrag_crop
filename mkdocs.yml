@@ -1,0 +1,52 @@
+site_name: V-CROP RAG - Documentation
+site_url: https://dhesdin.github.io/sae_s5_vrag_crop/
+docs_dir: documentation
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: teal
+      accent: cyan
+      toggle:
+        icon: material/brightness-7
+        name: Mode sombre
+
+    - scheme: slate
+      primary: teal
+      accent: cyan
+      toggle:
+        icon: material/brightness-4
+        name: Mode clair
+
+  features:
+    - navigation.tabs
+    - search.suggest
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - tables
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+nav:
+  - Accueil: index.md
+  - Documentation Utilisateur:
+      - Installation & lancement: utilisateur/installation.md
+      - Indexer un dossier d'images: utilisateur/indexation.md
+      - Rechercher une image: utilisateur/recherche.md
+      - Comprendre un résultat: utilisateur/resultats.md
+      - FAQ / erreurs courantes: utilisateur/faq.md
+  - Documentation Technique:
+      - Architecture: technique/architecture.md
+      - Schéma de données: technique/schema-donnees.md
+      - Choix techniques: technique/choix-techniques.md
+      - Stockage vectoriel: technique/stockage.md
+      - Essais et mesures: technique/essais.md
+      - Génération et déploiement: technique/generation-deploiement.md
+      - Déploiement applicatif (Docker): technique/deploiement.md

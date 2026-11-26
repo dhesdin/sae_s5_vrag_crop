@@ -1,0 +1,91 @@
+from pathlib import Path
+from typing import Any
+
+from chromadb import PersistentClient
+
+from v_crop_rag.storage.base import BaseVectorIndex, VectoreSearchResult
+
+
+class ChromaVectorIndex(BaseVectorIndex):
+    """Implement a BaseVector using Chroma"""
+
+    def __init__(self, path: str | Path, collection_name: str) -> None:
+        if not isinstance(collection_name, str):
+            raise TypeError("collection_name must be a string")
+
+        if not collection_name.strip():
+            raise ValueError("collection_name is required")
+
+        if not isinstance(path, (str, Path)):
+            raise TypeError("Path must be a string or a path")
+
+        if isinstance(path, str) and not path.strip():
+            raise ValueError("Path is required")
+
+        self._client = PersistentClient(path=path)
+        self._collection = self._client.get_or_create_collection(name=collection_name)
+
+    @staticmethod
+    def _check_id(id: str) -> None:
+        """raise an error if id is an empty string or another type"""
+        if not isinstance(id, str):
+            raise TypeError("id must be a string")
+
+        if not id.strip():
+            raise ValueError("id is required")
+
+    def add(self, id: str, vector: list[float], metadata: dict[str, Any]) -> None:
+        self._check_id(id)
+
+        if not isinstance(vector, list):
+            raise TypeError("vector must be a list")
+
+        if not vector:
+            raise ValueError("vector is required")
+
+        if not all(type(element) in (int, float) for element in vector):
+            raise TypeError("vector must contain only int or float")
+
+        if not isinstance(metadata, dict):
+            raise TypeError("metadata must be a dictionary")
+
+        # upsert instead of add bacause Chroma add silently an id even it already exists
+        self._collection.upsert(ids=[id], embeddings=[vector], metadatas=[metadata])
+
+    def query(self, vector: list[float], k: int = 5) -> list[VectoreSearchResult]:
+
+        if not isinstance(vector, list):
+            raise TypeError("vector must be a list")
+
+        if vector == []:
+            raise ValueError("vector is required")
+
+        if not all(type(item) in (int, float) for item in vector):
+            raise TypeError("coordinates of vector must be float or int")
+
+        if type(k) is not int:
+            raise TypeError("nomber of results must be an integer")
+
+        if k <= 0:
+            raise ValueError("nomber of results can't be a negative value")
+
+        results = self._collection.query(query_embeddings=[vector], n_results=k)
+
+        # Recover the first element of each because only one request is sent here
+        ids = results["ids"][0]
+        distances = results["distances"][0]
+        metadatas = results["metadatas"][0]
+
+        list_objects = []
+        for result_id, result_distance, result_metadata in zip(ids, distances, metadatas):
+            vector_result = VectoreSearchResult(id=result_id, distance=result_distance, metadata=result_metadata)
+            list_objects.append(vector_result)
+
+        return list_objects
+
+    def exists(self, id: str) -> bool:
+        self._check_id(id)
+
+        result = self._collection.get(ids=[id], include=[])
+
+        return len(result["ids"]) > 0
