@@ -27,7 +27,8 @@ def test_add_send_data_to_chroma():
 
         index.add(id="object01_test", vector=[0.1, -0.2, 0.7], metadata={"label": "test"})
 
-        mock_collection.add.assert_called_once_with(ids=["object01_test"], embeddings=[[0.1, -0.2, 0.7]], metadatas=[{"label": "test"}])
+        mock_collection.upsert.assert_called_once_with(ids=["object01_test"], embeddings=[[0.1, -0.2, 0.7]], metadatas=[{"label": "test"}])
+        mock_collection.add.assert_not_called()
 
 
 @pytest.mark.parametrize(
@@ -50,7 +51,7 @@ def test_add_reject_invalid_id_type(invalid_id):
         with pytest.raises(TypeError):
             index.add(id=invalid_id, vector=[0.1, -0.2, 0.7], metadata={"label": "test"})
 
-        mock_collection.add.assert_not_called()
+        mock_collection.upsert.assert_not_called()
 
 
 @pytest.mark.parametrize(
@@ -71,7 +72,7 @@ def test_add_reject_invalid_id_value(invalid_value_id):
         with pytest.raises(ValueError):
             index.add(id=invalid_value_id, vector=[0.1, -0.2, 0.7], metadata={"label": "test"})
 
-        mock_collection.add.assert_not_called()
+        mock_collection.upsert.assert_not_called()
 
 
 @pytest.mark.parametrize("invalid_vector", ["abc", (0.1, 0.2), 123, None])
@@ -84,7 +85,7 @@ def test_add_reject_invalid_vector_type(invalid_vector):
 
         with pytest.raises(TypeError):
             index.add(id="_object_01", vector=invalid_vector, metadata={"label": "test"})
-        mock_collection.add.assert_not_called()
+        mock_collection.upsert.assert_not_called()
 
 
 def test_add_reject_empty_vector():
@@ -92,11 +93,11 @@ def test_add_reject_empty_vector():
         index = ChromaVectorIndex(path="chroma/data", collection_name="iamges_test")
 
         mock_client = mock_persistent_client.return_value
-        mock_collection = mock_client.add.get_or_create_collection.return_value
+        mock_collection = mock_client.get_or_create_collection.return_value
 
         with pytest.raises(ValueError):
             index.add(id="test_object_01", vector=[], metadata={"label": "test"})
-        mock_collection.add.assert_not_called()
+        mock_collection.upsert.assert_not_called()
 
 
 @pytest.mark.parametrize(
@@ -112,11 +113,11 @@ def test_add_reject_invalid_vector_value(invalid_vector):
         index = ChromaVectorIndex(path="chroma/data", collection_name="images_test")
 
         mock_client = mock_persitent_client.return_value
-        mock_collection = mock_client.add.return_value
+        mock_collection = mock_client.get_or_create_collection.return_value
 
         with pytest.raises(TypeError):
             index.add(id="test_object_01", vector=invalid_vector, metadata={"label": "test"})
-        mock_collection.add.assert_not_called()
+        mock_collection.upsert.assert_not_called()
 
 
 @pytest.mark.parametrize("invalid_metadata", [[], 123, None, "test"])
@@ -125,11 +126,11 @@ def test_add_reject_invalid_metadata_type(invalid_metadata):
         index = ChromaVectorIndex(path="chroma/data", collection_name="images_test")
 
         mock_client = mock_persistent_client.return_value
-        mock_collection = mock_client.add.return_value
+        mock_collection = mock_client.get_or_create_collection.return_value
 
         with pytest.raises(TypeError):
             index.add(id="test_object_01", vector=[0.1, -0.2, 0.7], metadata=invalid_metadata)
-        mock_collection.add.assert_not_called()
+        mock_collection.upsert.assert_not_called()
 
 
 def test_query_returns_vector_search_results():
@@ -183,7 +184,7 @@ def test_query_reject_empty_vector():
         index = ChromaVectorIndex(path="chroma/data", collection_name="iamges_test")
 
         mock_client = mock_persistent_client.return_value
-        mock_collection = mock_client.add.get_or_create_collection.return_value
+        mock_collection = mock_client.get_or_create_collection.return_value
 
         with pytest.raises(ValueError):
             index.query(vector=[], k=2)
@@ -203,7 +204,7 @@ def test_query_reject_invalid_vector_value(invalid_vector):
         index = ChromaVectorIndex(path="chroma/data", collection_name="images_test")
 
         mock_client = mock_persitent_client.return_value
-        mock_collection = mock_client.add.return_value
+        mock_collection = mock_client.get_or_create_collection.return_value
 
         with pytest.raises(TypeError):
             index.query(vector=invalid_vector, k=2)
@@ -216,7 +217,7 @@ def test_query_reject_invalid_k_type(invalid_k):
         index = ChromaVectorIndex(path="chroma/data", collection_name="iamges_test")
 
         mock_client = mock_persistent_client.return_value
-        mock_collection = mock_client.add.get_or_create_collection.return_value
+        mock_collection = mock_client.get_or_create_collection.return_value
 
         with pytest.raises(TypeError):
             index.query(vector=[0.1, -0.2, 0.7], k=invalid_k)
@@ -229,7 +230,7 @@ def test_query_reject_invalid_k_value(invalid_k):
         index = ChromaVectorIndex(path="chroma/data", collection_name="iamges_test")
 
         mock_client = mock_persistent_client.return_value
-        mock_collection = mock_client.add.get_or_create_collection.return_value
+        mock_collection = mock_client.get_or_create_collection.return_value
 
         with pytest.raises(ValueError):
             index.query(vector=[0.1, -0.2, 0.7], k=invalid_k)
@@ -270,3 +271,88 @@ def test_chroma_persists_data(tmp_path):
     assert results[0].id == "Obejct_A"
     assert results[0].distance == pytest.approx(0.0)
     assert results[0].metadata == {"label": "A"}
+
+
+def test_exists_return_true_when_id_is_found():
+    with patch("v_crop_rag.storage.chroma.PersistentClient") as mock_persistent_client:
+        index = ChromaVectorIndex(path="data/chroma", collection_name="test_images")
+
+        mock_collection = mock_persistent_client.return_value.get_or_create_collection.return_value
+        mock_collection.get.return_value = {"ids": ["bench_0:main"]}
+
+        assert index.exists("bench_0:main") is True
+        mock_collection.get.assert_called_once_with(ids=["bench_0:main"], include=[])
+
+
+def test_exists_returns_false_when_id_is_missing():
+    with patch("v_crop_rag.storage.chroma.PersistentClient") as mock_persistent_client:
+        index = ChromaVectorIndex(path="data/chroma", collection_name="test_images")
+
+        mock_collection = mock_persistent_client.return_value.get_or_create_collection.return_value
+        mock_collection.get.return_value = {"ids": []}
+
+        assert index.exists("bench_0:main") is False
+
+
+@pytest.mark.parametrize("invalid_id", [123, None, [], {}])
+def test_exists_reject_invalid_id_type(invalid_id):
+    with patch("v_crop_rag.storage.chroma.PersistentClient") as mock_persistent_client:
+        index = ChromaVectorIndex(path="data/chroma", collection_name="test_images")
+
+        mock_collection = mock_persistent_client.return_value.get_or_create_collection.return_value
+
+        with pytest.raises(TypeError):
+            index.exists(invalid_id)
+        mock_collection.get.assert_not_called()
+
+
+@pytest.mark.parametrize("invalid_value_id", ["", "   "])
+def test_exists_reject_invalid_id_value(invalid_value_id):
+    with patch("v_crop_rag.storage.chroma.PersistentClient") as mock_persistent_client:
+        index = ChromaVectorIndex(path="data/chroma", collection_name="test_images")
+
+        mock_collection = mock_persistent_client.return_value.get_or_create_collection.return_value
+
+        with pytest.raises(ValueError):
+            index.exists(invalid_value_id)
+        mock_collection.get.assert_not_called()
+
+
+def test_exists_integration_with_chroma(tmp_path):
+    index = ChromaVectorIndex(path=tmp_path / "chroma", collection_name="integration_test")
+
+    assert index.exists("bench_0:main") is False
+
+    index.add(id="bench_0:main", vector=[1.0, 0.0, 0.0], metadata={"label": "A"})
+
+    assert index.exists("bench_0:main") is True
+    assert index.exists("bench_1:main") is False
+
+
+def test_exists_after_restart(tmp_path):
+    path_tempo = tmp_path / "chroma"
+
+    index1 = ChromaVectorIndex(path=path_tempo, collection_name="integration_test")
+    index1.add(id="bench_0:main", vector=[1.0, 0.0, 0.0], metadata={"label": "A"})
+
+    index2 = ChromaVectorIndex(path=path_tempo, collection_name="integration_test")
+
+    assert index2.exists("bench_0:main") is True
+
+
+def test_add_same_id_replaces_entry(tmp_path):
+    """
+    Mock a new indexation : same id write 2 times raise an error without upsert
+    """
+
+    index = ChromaVectorIndex(path=tmp_path / "chroma", collection_name="integration_test")
+
+    index.add(id="test_0:0", vector=[1.0, 0.0, 0.0], metadata={"label": "old"})
+    index.add(id="test_0:0", vector=[0.0, 1.0, 0.0], metadata={"label": "new"})
+
+    results = index.query(vector=[0.0, 1.0, 0.0], k=5)
+
+    assert len(results) == 1
+    assert results[0].id == "test_0:0"
+    assert results[0].metadata == {"label": "new"}
+    assert results[0].distance == pytest.approx(0.0)

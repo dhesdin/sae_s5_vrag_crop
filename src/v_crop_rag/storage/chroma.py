@@ -25,12 +25,17 @@ class ChromaVectorIndex(BaseVectorIndex):
         self._client = PersistentClient(path=path)
         self._collection = self._client.get_or_create_collection(name=collection_name)
 
-    def add(self, id: str, vector: list[float], metadata: dict[str, Any]) -> None:
+    @staticmethod
+    def _check_id(id: str) -> None:
+        """raise an error if id is an empty string or another type"""
         if not isinstance(id, str):
             raise TypeError("id must be a string")
 
         if not id.strip():
             raise ValueError("id is required")
+
+    def add(self, id: str, vector: list[float], metadata: dict[str, Any]) -> None:
+        self._check_id(id)
 
         if not isinstance(vector, list):
             raise TypeError("vector must be a list")
@@ -44,7 +49,8 @@ class ChromaVectorIndex(BaseVectorIndex):
         if not isinstance(metadata, dict):
             raise TypeError("metadata must be a dictionary")
 
-        self._collection.add(ids=[id], embeddings=[vector], metadatas=[metadata])
+        # upsert instead of add bacause Chroma add silently an id even it already exists
+        self._collection.upsert(ids=[id], embeddings=[vector], metadatas=[metadata])
 
     def query(self, vector: list[float], k: int = 5) -> list[VectoreSearchResult]:
 
@@ -76,3 +82,10 @@ class ChromaVectorIndex(BaseVectorIndex):
             list_objects.append(vector_result)
 
         return list_objects
+
+    def exists(self, id: str) -> bool:
+        self._check_id(id)
+
+        result = self._collection.get(ids=[id], include=[])
+
+        return len(result["ids"]) > 0
