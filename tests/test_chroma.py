@@ -184,7 +184,7 @@ def test_query_reject_empty_vector():
         index = ChromaVectorIndex(path="chroma/data", collection_name="iamges_test")
 
         mock_client = mock_persistent_client.return_value
-        mock_collection = mock_client.add.get_or_create_collection.return_value
+        mock_collection = mock_client.get_or_create_collection.return_value
 
         with pytest.raises(ValueError):
             index.query(vector=[], k=2)
@@ -204,7 +204,7 @@ def test_query_reject_invalid_vector_value(invalid_vector):
         index = ChromaVectorIndex(path="chroma/data", collection_name="images_test")
 
         mock_client = mock_persitent_client.return_value
-        mock_collection = mock_client.add.return_value
+        mock_collection = mock_client.get_or_create_collection.return_value
 
         with pytest.raises(TypeError):
             index.query(vector=invalid_vector, k=2)
@@ -217,7 +217,7 @@ def test_query_reject_invalid_k_type(invalid_k):
         index = ChromaVectorIndex(path="chroma/data", collection_name="iamges_test")
 
         mock_client = mock_persistent_client.return_value
-        mock_collection = mock_client.add.get_or_create_collection.return_value
+        mock_collection = mock_client.get_or_create_collection.return_value
 
         with pytest.raises(TypeError):
             index.query(vector=[0.1, -0.2, 0.7], k=invalid_k)
@@ -230,7 +230,7 @@ def test_query_reject_invalid_k_value(invalid_k):
         index = ChromaVectorIndex(path="chroma/data", collection_name="iamges_test")
 
         mock_client = mock_persistent_client.return_value
-        mock_collection = mock_client.add.get_or_create_collection.return_value
+        mock_collection = mock_client.get_or_create_collection.return_value
 
         with pytest.raises(ValueError):
             index.query(vector=[0.1, -0.2, 0.7], k=invalid_k)
