@@ -17,8 +17,7 @@ def _build_dependencies() -> tuple[OllamaEmbedding, ChromaVectorIndex]:
     The results is stored in the cache, build once then reused
 
     Raises:
-        FileNotFoundError: If the Chroma index file (chroma.sqlite3) is found in the expected path.
-
+        FileNotFoundError: If the Chroma index file (chroma.sqlite3) is missing in the expected path.
     Returns:
         tuple[OllamaEmbedding, ChromaVectorIndex]: The embedding model and the vector index.
     """
