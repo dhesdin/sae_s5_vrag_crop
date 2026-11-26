@@ -81,6 +81,9 @@ class FakeIndex(BaseVectorIndex):
         self.query_calls.append((vector, k))
         return self.results
 
+    def exists(self, id):
+        return any(entry_id == id for entry_id, _, _ in self.added)
+
 
 def make_result(entry_id, distance, image, text="un vélo rouge"):
     """Build a search result the way the index returns it."""
