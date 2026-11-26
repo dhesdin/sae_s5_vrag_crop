@@ -328,7 +328,20 @@ async def test_index_dataset_indexes_every_image():
 
     result = await index_dataset([Path("a.jpg"), Path("b.jpg")], vlm, FakeEmbedding(), FakeIndex())
 
-    assert result == {"indexed": ["a.jpg", "b.jpg"], "failed": []}
+    assert result == {"indexed": ["a.jpg", "b.jpg"], "skipped": [], "failed": []}
+
+
+# call twice to check that already indexed images are skipped
+@pytest.mark.asyncio
+async def test_index_dataset_skips_already_indexed_images():
+    vlm = FakeVLM(build_description_json())
+    index = FakeIndex()
+    images = [Path("a.jpg"), Path("b.jpg")]
+
+    await index_dataset(images, vlm, FakeEmbedding(), index)
+    result = await index_dataset(images, vlm, FakeEmbedding(), index)
+
+    assert result == {"indexed": [], "skipped": ["a.jpg", "b.jpg"], "failed": []}
 
 
 # a bad VLM answer does not stop the run: both images are listed as failed
