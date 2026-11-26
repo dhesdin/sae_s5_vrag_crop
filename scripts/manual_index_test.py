@@ -4,6 +4,7 @@ import time
 from math import sqrt
 from pathlib import Path
 
+from v_crop_rag.config import OLLAMA_URL
 from v_crop_rag.ollama_client.embedding import OllamaEmbedding
 from v_crop_rag.ollama_client.ollama_wrapper_iut import OllamaWrapper
 from v_crop_rag.ollama_client.vlm import OllamaVLM
@@ -23,7 +24,7 @@ SHORT_TEXT = "Des pastèques verte et mûre"
 
 async def main() -> None:
     # setup
-    client = OllamaWrapper(timeout_s=300) # try with 300 s bc 60 TO
+    client = OllamaWrapper(base_url=OLLAMA_URL, timeout_s=300) # try with 300 s bc 60 TO
 
     # guard clauses
     if not await client.is_server_running():

@@ -54,3 +54,15 @@ def test_build_dependencies_raises_when_index_folder_is_empty(monkeypatch, tmp_p
 
     with pytest.raises(FileNotFoundError):
         search_service._build_dependencies()
+
+
+def test_build_dependencies_uses_configured_ollama_url(monkeypatch, tmp_path):
+    (tmp_path / "chroma.sqlite3").touch()
+    monkeypatch.setattr(search_service, "CHROMA_PATH", tmp_path)
+    monkeypatch.setattr(search_service, "OLLAMA_URL", "http://example:11434")
+    search_service._build_dependencies.cache_clear()
+
+    embedding, _ = search_service._build_dependencies()
+
+    assert embedding._client._base_url == "http://example:11434"
+    search_service._build_dependencies.cache_clear()
