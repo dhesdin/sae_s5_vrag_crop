@@ -11,4 +11,5 @@ class SearchResult(BaseModel):
     rank: int
     image: str
     distance: float
+    similarity: float
     matched: str

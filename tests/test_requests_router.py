@@ -6,8 +6,8 @@ from backend.routers import requestsRouter
 from v_crop_rag.ollama_client.ollama_wrapper_iut import OllamaConnectionError
 
 RESULTS = [
-    {"image": "market_0.jpg", "distance": 0.531, "matched": "ananas jaune dans un bac"},
-    {"image": "kitchen_0.jpg", "distance": 0.602, "matched": "ananas sur une table"},
+    {"image": "market_0.jpg", "distance": 0.531, "similarity": 0.734, "matched": "ananas jaune dans un bac"},
+    {"image": "kitchen_0.jpg", "distance": 0.602, "similarity": 0.699, "matched": "ananas sur une table"},
 ]
 
 
