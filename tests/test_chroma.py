@@ -275,10 +275,10 @@ def test_chroma_persists_data(tmp_path):
 def test_exists_return_true_when_id_is_found():
     with patch("v_crop_rag.storage.chroma.PersistentClient") as mock_persistent_client:
         index = ChromaVectorIndex(path="data/chroma", collection_name="test_images")
-        
+
         mock_collection = mock_persistent_client.return_value.get_or_create_collection.return_value
         mock_collection.get.return_value = {"ids": ["bench_0:main"]}
-        
+
         assert index.exists("bench_0:main") is True
         mock_collection.get.assert_called_once_with(ids=["bench_0:main"], include=[])
 
@@ -293,15 +293,7 @@ def test_exists_returns_false_when_id_is_missing():
         assert index.exists("bench_0:main") is False
 
 
-@pytest.mark.parametrize(
-    "invalid_id", 
-        [
-            123,
-            None,
-            [],
-            {}
-        ]
-    )
+@pytest.mark.parametrize("invalid_id", [123, None, [], {}])
 def test_exists_reject_invalid_id_type(invalid_id):
     with patch("v_crop_rag.storage.chroma.PersistentClient") as mock_persistent_client:
         index = ChromaVectorIndex(path="data/chroma", collection_name="test_images")
@@ -313,9 +305,7 @@ def test_exists_reject_invalid_id_type(invalid_id):
         mock_collection.get.assert_not_called()
 
 
-@pytest.mark.parametrize(
-    "invalid_value_id", ["", "   "]
-    )
+@pytest.mark.parametrize("invalid_value_id", ["", "   "])
 def test_exists_reject_invalid_id_value(invalid_value_id):
     with patch("v_crop_rag.storage.chroma.PersistentClient") as mock_persistent_client:
         index = ChromaVectorIndex(path="data/chroma", collection_name="test_images")
