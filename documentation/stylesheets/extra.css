@@ -1,0 +1,69 @@
+/* ===== Onglets du haut (Documentation Utilisateur, Technique) ===== */
+.md-tabs__link {
+  padding: 0.35rem 0.9rem;
+  border-radius: 6px 6px 0 0;
+  opacity: 0.85;
+  transition: background-color 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+}
+
+.md-tabs__link:hover {
+  background-color: rgba(255, 255, 255, 0.18);
+  opacity: 1;
+}
+
+.md-tabs__item--active .md-tabs__link {
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 -3px 0 0 #fff;
+}
+
+/* ===== Menu latéral ===== */
+.md-nav--primary .md-nav__link {
+  border-left: 3px solid transparent;
+  border-radius: 0 6px 6px 0;
+  padding-left: 0.6rem;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.md-nav--primary .md-nav__link:hover {
+  background-color: rgba(0, 150, 136, 0.1);
+  border-left-color: var(--md-primary-fg-color);
+}
+
+.md-nav--primary .md-nav__link--active {
+  background-color: rgba(0, 150, 136, 0.14);
+  border-left-color: var(--md-accent-fg-color);
+  font-weight: 600;
+}
+
+/* titres de sections : petits, en majuscules, soulignés */
+.md-nav--primary .md-nav__item--section > .md-nav__link {
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+  border-left-color: transparent;
+  border-radius: 0;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.3rem;
+  text-transform: uppercase;
+}
+
+/* ===== Contenu : tableaux et code ===== */
+.md-typeset table:not([class]) {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.md-typeset table:not([class]) th {
+  background-color: var(--md-primary-fg-color);
+  color: var(--md-primary-bg-color);
+}
+
+.md-typeset table:not([class]) tbody tr:hover {
+  background-color: rgba(0, 150, 136, 0.08);
+}
+
+.md-typeset pre > code {
+  border-radius: 6px;
+}

@@ -9,6 +9,8 @@ from v_crop_rag.ollama_client.vlm import OllamaVLM
 from v_crop_rag.service.core import index_dataset
 from v_crop_rag.service.dataset_loader import list_dataset_images
 from v_crop_rag.storage.chroma import ChromaVectorIndex
+from v_crop_rag.service.search_service import CHROMA_PATH, COLLECTION_NAME
+
 
 # ==== CONSTANT ==== #
 CHROMA_PATH = Path("data/chroma")
@@ -23,11 +25,12 @@ async def main() -> None:
     # guard clauses
     if not await client.is_server_running():
         raise SystemExit("Ollama server is not running")
+    
+    # Re-running is safe -> fully indexed images are skipped. If a previous run was interrupted
+    # in the middle of an image, delete data/chroma and start again to avoid mixing
+    # two VLM descriptions of the same image.
 
-    # a half-filled index from an earlier run would mix two VLM answers for the same image
-    if CHROMA_PATH.exists():
-        raise SystemExit(f"{CHROMA_PATH} already exists, delete it to start from an empty index")
-
+    
     # images
     images = list_dataset_images(Path("dataset"))
 
@@ -44,6 +47,7 @@ async def main() -> None:
     total = time.perf_counter() - start
 
     print("Indexed:", len(result["indexed"]))
+    print("Skipped (already indexed):", len(result["skipped"]))
     print("Failed:", result["failed"])
     print("Total time:", total, "seconds")
 

@@ -25,7 +25,7 @@ async def test_search_images_returns_results_and_passes_k(monkeypatch):
 
     assert len(results) == 2
     assert results[0]["image"] == "market_0.jpg"
-    assert set(results[0].keys()) == {"image", "distance", "matched"}
+    assert set(results[0].keys()) == {"image", "distance", "similarity", "matched"}
     assert index.query_calls[0][1] == 3 * ELEMENTS_PER_IMAGE
 
 
@@ -42,6 +42,15 @@ async def test_search_images_does_not_catch_value_error(monkeypatch):
 def test_build_dependencies_raises_when_index_missing(monkeypatch, tmp_path):
     monkeypatch.setattr(search_service, "CHROMA_PATH", tmp_path / "missing")
     search_service._build_dependencies.cache_clear()  # Clear the cache to force rebuilding dependencies
+
+    with pytest.raises(FileNotFoundError):
+        search_service._build_dependencies()
+
+
+def test_build_dependencies_raises_when_index_folder_is_empty(monkeypatch, tmp_path):
+    # Docker creates an empty folder when the mounted one does not exist
+    monkeypatch.setattr(search_service, "CHROMA_PATH", tmp_path)
+    search_service._build_dependencies.cache_clear()
 
     with pytest.raises(FileNotFoundError):
         search_service._build_dependencies()

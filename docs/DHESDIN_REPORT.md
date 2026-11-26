@@ -455,3 +455,41 @@ Rendre la recherche utilisable et mesurée (sprint 3) : `search_image`, indexati
   `VectoreSearchResult` (en cours).
 - Préfixe de tâche d'embeddinggemma côté requête : à vérifier dans la fiche du modèle
   avant toute modification.
+
+  ---
+
+## Séance du 26/11/2026
+
+Durée: 4h30
+
+### Contexte du travail
+
+Le Bloc C (Mathys) ne doit parler qu'à une fonction de service de moi-même. `search_image` demande un embedder et un index déjà construits, donc Mathys n'aurait pu l'appeler qu'en important Ollama et Chroma. Il faut une fonction qui construit ces objets à sa place. Frédéric a aussi fusionné `exists` et `upsert` dans le stockage (PR #23), ce qui permet de reprendre une indexation interrompue.
+
+### Ce qui a été fait
+
+- `service/search_service.py` : `search_images(query, k=5)`, asynchrone. `_build_dependencies()` construit le client Ollama, l'embedder et l'index Chroma, et n'est exécutée qu'une fois (`functools.cache`). 3 tests dans `tests/test_search_service.py` (résultats et k transmis, `ValueError` non rattrapée, `FileNotFoundError` si l'index est absent).
+- Vrai appel sur le serveur IUT : « un ananas » donne market_0 (0,531) et kitchen_0 (0,539) aux rangs 1 et 2. `k = 30` renvoie les 30 images sans erreur.
+- Contrat avec Mathys : il expose `POST /requests/` avec `{"query", "k"}` (`k` à 5 par défaut, au moins 1), appelle `search_images` avec `await` et renvoie une liste de `{rank, image, distance, matched}`. Erreurs : `ValueError` en 422, `OllamaConnectionError` en 503, `FileNotFoundError` en 500. La requête est tronquée à 100 caractères par le service. Branche `mlevitre/RequestRouter`, non mergée à ce stade. Depuis la PR #27, `search_images` renvoie aussi `similarity`, que l'API ne transmet pas encore.
+- Reprise de l'indexation : `index_dataset` appelle `index.exists` sur l'entrée `:main` et saute l'image si elle existe (nouvelle clé `skipped`). L'id du marqueur est construit par une seule fonction, `_main_entry_id`. 151 tests au `make test`.
+- `scripts/manual_dataset_index.py` : garde sur un index existant retiré, constantes importées depuis `search_service`, ligne « Skipped » ajoutée. Relance sur l'index complet : 30 images sautées en 0,14 s (`docs/essais/essai-7-reprise-indexation.md`).
+- Essai de bout en bout par l'API (branche `mlevitre/RequestRouter`) : market_0 et kitchen_0 aux rangs 1 et 2, mêmes distances que l'appel direct (essai-8). La garde de `search_service` teste désormais `chroma.sqlite3` et non le dossier (PR #28), 152 tests. Limite : ce fichier prouve qu'un index existe, pas qu'il est complet.
+
+### Difficultés rencontrées
+
+- Première version de `_build_dependencies` : chemin relatif `data/chroma` (Chroma aurait créé un dossier vide et chaque recherche aurait renvoyé une liste vide sans erreur), `SystemExit` dans du code de service (non rattrapé par un `except Exception`, donc incompatible avec la conversion en 503), timeout de 300 s copié du script d'indexation. Corrigés en relecture.
+- Un seul test existant rouge après l'ajout de la clé `skipped` : il comparait le dictionnaire entier. Attendu, corrigé.
+- `make format` après les commits a modifié un fichier de tests, ce qui avait fait échouer la CI de la première PR.
+
+### Décisions techniques
+
+- `search_images` n'attrape aucune exception : c'est le Bloc C qui connaît ses codes HTTP.
+- `_build_dependencies` est séparée de `search_images` pour que les tests la remplacent par de faux objets avec `monkeypatch`, sans serveur ni index.
+- Le garde de `FileNotFoundError` est placé avant la création du client Ollama : si l'index n'existe pas, on n'ouvre pas de connexion pour rien.
+- Reprise : `exists` est appelé avant le `try` de la boucle, pour qu'une `ValueError` d'id invalide ne soit pas comptée comme une image en échec.
+- Limite connue : une image interrompue en cours de route (sans entrée `:main`) est réindexée par-dessus ses anciens ids. Le VLM n'étant pas déterministe, des entrées de l'ancienne description peuvent rester. Une suppression par image dans le stockage serait nécessaire.
+
+### Points ouverts
+
+- Branchement de l'API par Mathys.
+- Frédéric : suppression par image, métrique cosinus (la collection est toujours créée sans réglage), renommer `VectoreSearchResult`.

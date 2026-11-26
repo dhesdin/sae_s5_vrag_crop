@@ -9,6 +9,12 @@ from v_crop_rag.service.utils import bbox_to_metadata, image_to_metadata, object
 from v_crop_rag.storage.base import BaseVectorIndex
 
 
+# helper for existing ids
+def _main_entry_id(image_path: Path) -> str:
+    """Return the id of the ":main" entry, written last: if it exists, the image is fully indexed."""
+    return f"{image_path.stem}:main"
+
+
 async def index_image(image_path: Path, vlm: BaseVLM, embedding: BaseEmbedding, index: BaseVectorIndex) -> int:
     """
     Describe one image with the VLM, then embed and index its background,
@@ -81,7 +87,7 @@ async def index_image(image_path: Path, vlm: BaseVLM, embedding: BaseEmbedding, 
 
     # it ensure the main subject entry is only added after all detected objects have been processed
     metadata = {**image_to_metadata(image_path, "main_subject"), "text": main_subject_text}
-    entries.append((f"{image_path.stem}:main", await embedding.embed(text=main_subject_text), metadata))
+    entries.append((_main_entry_id(image_path), await embedding.embed(text=main_subject_text), metadata))
 
     # ==== WRITE EVERYTHING ONCE ALL EMBEDDINGS SUCCEEDED ==== #
     # (a) if any embedding above failed, nothing has been written to the index yet.
@@ -94,7 +100,7 @@ async def index_image(image_path: Path, vlm: BaseVLM, embedding: BaseEmbedding, 
 
 
 async def index_dataset(image_paths: list[Path], vlm: BaseVLM, embedding: BaseEmbedding, index: BaseVectorIndex) -> dict:
-    """Index every image, skip the ones the VLM answers badly, stop on any other error.
+    """Index every image not already indexed, skip the ones the VLM answers badly, stop on any other error.
     Args:
     image_paths: list[Path]
         List of image file paths to index.
@@ -111,12 +117,18 @@ async def index_dataset(image_paths: list[Path], vlm: BaseVLM, embedding: BaseEm
     Returns:
         dict: A dictionary containing two keys:
             "indexed": list of names of successfully indexed images.
+            "skipped": list of names of images that were already indexed.
             "failed": list of tuples with the name and reason for each skipped image.
     """
     indexed = []  # names of the indexed images
-    failed = []  # (name, reason) of the skipped images
+    skipped = []  # names of the images already fully indexed
+    failed = []  # (name, reason) of the skipped imagesges
 
     for image_path in image_paths:
+        if index.exists(_main_entry_id(image_path)):
+            skipped.append(image_path.name)
+            print(image_path.name, "already indexed")
+            continue
         start = time.perf_counter()
         try:
             await index_image(image_path=image_path, vlm=vlm, embedding=embedding, index=index)
@@ -127,7 +139,7 @@ async def index_dataset(image_paths: list[Path], vlm: BaseVLM, embedding: BaseEm
             e_truncate = str(e)[:200]
             failed.append((image_path.name, e_truncate))  # 200 for truncating long error messages
             print(image_path.name, "FAILED", e_truncate)
-    return {"indexed": indexed, "failed": failed}
+    return {"indexed": indexed, "skipped": skipped, "failed": failed}
 
 
 # REQUEST BY USER
@@ -149,7 +161,8 @@ async def search_image(query: str, embedding: BaseEmbedding, index: BaseVectorIn
 
     Returns:
         list[dict]: At most k dicts sorted by ascending distance, one per image, with the keys
-            "image" (file name), "distance" (of its closest element) and "matched" (text of that element).
+            "image" (file name), "distance" (of its closest element), "similarity" (relevance score of that element, 1 = same)
+            and "matched" (text of that element).
     """
     # ==== GUARD CLAUSES ==== #
     if not isinstance(query, str):
@@ -181,6 +194,7 @@ async def search_image(query: str, embedding: BaseEmbedding, index: BaseVectorIn
             best_by_image[image_name] = {
                 "image": image_name,
                 "distance": result.distance,
+                "similarity": result.similarity,
                 "matched": result.metadata["text"],
             }
 
