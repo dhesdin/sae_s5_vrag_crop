@@ -1,0 +1,1315 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://dhesdin.github.io/sae_s5_vrag_crop/technique/essais/">
+      
+      
+        <link rel="prev" href="../stockage/">
+      
+      
+        <link rel="next" href="../generation-deploiement/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
+    
+    
+      
+        <title>Essais et mesures - V-CROP RAG - Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#essais-et-mesures" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="V-CROP RAG - Documentation" class="md-header__button md-logo" aria-label="V-CROP RAG - Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            V-CROP RAG - Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Essais et mesures
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="cyan"  aria-label="Mode sombre"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Mode sombre" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="cyan"  aria-label="Mode clair"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Mode clair" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Accueil
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../utilisateur/installation/" class="md-tabs__link">
+          
+  
+  
+  Documentation Utilisateur
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../architecture/" class="md-tabs__link">
+          
+  
+  
+  Documentation Technique
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="V-CROP RAG - Documentation" class="md-nav__button md-logo" aria-label="V-CROP RAG - Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    V-CROP RAG - Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Accueil
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Utilisateur
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Documentation Utilisateur
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utilisateur/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation & lancement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utilisateur/indexation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Indexer un dossier d'images
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utilisateur/recherche/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rechercher une image
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utilisateur/resultats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Comprendre un résultat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utilisateur/faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ / erreurs courantes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Technique
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Documentation Technique
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schema-donnees/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schéma de données
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../choix-techniques/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choix techniques
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stockage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stockage vectoriel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Essais et mesures
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Essais et mesures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-premier-essai-sur-une-image-10112026" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Premier essai sur une image (10/11/2026)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-indexation-des-30-images" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Indexation des 30 images
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-evaluation-de-la-recherche-sur-10-requetes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Évaluation de la recherche sur 10 requêtes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-diagnostics-sur-les-echecs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Diagnostics sur les échecs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limites-de-ces-mesures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limites de ces mesures
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pistes-non-testees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pistes non testées
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../generation-deploiement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Génération et déploiement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deploiement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Déploiement applicatif (Docker)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-premier-essai-sur-une-image-10112026" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Premier essai sur une image (10/11/2026)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-indexation-des-30-images" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Indexation des 30 images
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-evaluation-de-la-recherche-sur-10-requetes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Évaluation de la recherche sur 10 requêtes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-diagnostics-sur-les-echecs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Diagnostics sur les échecs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limites-de-ces-mesures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limites de ces mesures
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pistes-non-testees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pistes non testées
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="essais-et-mesures">Essais et mesures</h1>
+<p>Tous les chiffres de cette page viennent d'essais lancés sur le serveur Ollama
+de l'IUT, avec <code>qwen3-vl:8b-instruct</code> et <code>embeddinggemma:latest</code>. Les sorties
+brutes sont versionnées dans <code>docs/essais/</code> du dépôt : chaque chiffre peut
+être vérifié.</p>
+<h2 id="1-premier-essai-sur-une-image-10112026">1. Premier essai sur une image (10/11/2026)</h2>
+<p>Script : <code>scripts/manual_index_test.py</code>, image <code>market_0.jpg</code>.
+Sorties : <code>essai-1-timeout-vlm.md</code>, <code>essai-index-image-2026-11-10.md</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Mesure</th>
+<th>Valeur</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dimension des vecteurs</td>
+<td>768</td>
+</tr>
+<tr>
+<td>Norme d'un vecteur</td>
+<td>0,9999999 (donc normalisés)</td>
+</tr>
+<tr>
+<td>Temps du VLM pour une image</td>
+<td>24 s</td>
+</tr>
+<tr>
+<td><code>index_image</code> complet</td>
+<td>11 entrées en 26 s</td>
+</tr>
+<tr>
+<td>Relance sur la même image</td>
+<td>8 entrées : le VLM n'est pas déterministe</td>
+</tr>
+</tbody>
+</table>
+<p>Le premier passage a échoué : le timeout par défaut du wrapper (60 s) est
+trop court pour le premier appel au VLM, le temps que le modèle se charge.
+Les scripts suivants passent <code>timeout_s=300</code>.</p>
+<h2 id="2-indexation-des-30-images">2. Indexation des 30 images</h2>
+<p>Script : <code>scripts/manual_dataset_index.py</code>. Sortie : <code>essai-3-index-dataset.md</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Mesure</th>
+<th>Valeur</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Images indexées</td>
+<td>30 sur 30</td>
+</tr>
+<tr>
+<td>Échecs</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Temps total</td>
+<td>1552,6 s (environ 26 min)</td>
+</tr>
+<tr>
+<td>Moyenne par image</td>
+<td>51,8 s</td>
+</tr>
+<tr>
+<td>Plus rapide / plus lente</td>
+<td>35,2 s (<code>bench_1</code>) / 73,1 s (<code>market_2</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>Une image coûte en moyenne deux fois plus que sur <code>market_0.jpg</code> au premier
+essai. L'estimation de départ (13 minutes pour le dataset, à partir des 24 s
+du premier essai) était donc fausse. Les images les plus chargées (cuisines,
+marchés, établis) sont les plus lentes, ce qui colle avec un VLM qui décrit
+plus d'objets ; ce lien n'a pas été mesuré précisément.</p>
+<h2 id="3-evaluation-de-la-recherche-sur-10-requetes">3. Évaluation de la recherche sur 10 requêtes</h2>
+<p>Script : <code>scripts/manual_eval_search.py</code>. Sortie : <code>essai-4-evaluation.md</code>.</p>
+<p>Les 10 requêtes ont été écrites à la main à partir de
+<code>dataset/ground_truth.json</code>, qui décrit le contenu attendu de chaque image.
+Pour chaque requête, on regarde si une image attendue apparaît dans les 3
+premiers résultats (<code>k = 3</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Requête</th>
+<th>Image attendue</th>
+<th>Rang</th>
+<th>Distance</th>
+<th>Élément trouvé</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>un ananas</td>
+<td><code>kitchen_0</code>, <code>market_0</code></td>
+<td>1</td>
+<td>0,531</td>
+<td>ananas jaune dans un bac</td>
+</tr>
+<tr>
+<td>un scooter</td>
+<td><code>terace_2</code>, <code>car_0</code></td>
+<td>2</td>
+<td>0,954</td>
+<td>moto gris stationnée</td>
+</tr>
+<tr>
+<td>un réverbère</td>
+<td><code>bicycle_2</code></td>
+<td>absent</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>un mètre ruban</td>
+<td><code>workbench_2</code></td>
+<td>1</td>
+<td>0,855</td>
+<td>ruban à mesurer jaune</td>
+</tr>
+<tr>
+<td>une voiture de sport rouge</td>
+<td><code>car_2</code></td>
+<td>1</td>
+<td>0,483</td>
+<td>une voiture rouge Dodge Challenger</td>
+</tr>
+<tr>
+<td>un vélo bleu</td>
+<td><code>bicycle_1</code></td>
+<td>1</td>
+<td>0,459</td>
+<td>un vélo bleu appuyé contre un mur</td>
+</tr>
+<tr>
+<td>un parasol multicolore</td>
+<td><code>beach_1</code></td>
+<td>1</td>
+<td>0,415</td>
+<td>un parasol coloré sur une plage de sable</td>
+</tr>
+<tr>
+<td>un sous-bois d'automne</td>
+<td><code>bench_1</code></td>
+<td>1</td>
+<td>0,690</td>
+<td>un banc en bois dans une forêt d'automne</td>
+</tr>
+<tr>
+<td>des îlots rocheux dans une eau turquoise</td>
+<td><code>beach_0</code></td>
+<td>1</td>
+<td>0,603</td>
+<td>mer turquoise, petites îles rocheuses à l'horizon</td>
+</tr>
+<tr>
+<td>un mur rose</td>
+<td><code>bicycle_0</code></td>
+<td>1</td>
+<td>0,364</td>
+<td>mur rose pâle</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Résultat : 9 requêtes sur 10 ont une image attendue dans le top 3</strong>, dont 8
+au rang 1.</p>
+<p>Temps de réponse : environ 1,7 s pour la première requête (le modèle
+d'embedding démarre), puis 0,12 à 0,28 s.</p>
+<p>Ce qui marche bien : des détails qui ne sont pas le sujet de la photo sont
+retrouvés (le mètre ruban sur un établi, l'ananas dans un marché), et les
+requêtes de décor aussi (« un sous-bois d'automne », « des îlots rocheux »).</p>
+<h2 id="4-diagnostics-sur-les-echecs">4. Diagnostics sur les échecs</h2>
+<p>Sorties : <code>essai-5-variantes-vocabulaire.md</code>, <code>essai-6-diagnostic-lampadaire.md</code>.</p>
+<p><strong>« un scooter »</strong> : problème de vocabulaire. Le VLM a écrit « moto » et
+« motocycle ». Avec la requête « un motocycle », les deux images attendues
+sortent aux rangs 1 et 2.</p>
+<p><strong>« un réverbère »</strong> : échec pas complètement expliqué.</p>
+<table>
+<thead>
+<tr>
+<th>Requête</th>
+<th>Rang de <code>bicycle_2</code></th>
+<th>Distance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>un réverbère</td>
+<td>absent</td>
+<td>-</td>
+</tr>
+<tr>
+<td>un lampadaire</td>
+<td>absent (des lampes de bureau et de salon passent devant)</td>
+<td>-</td>
+</tr>
+<tr>
+<td>un lampadaire noir</td>
+<td>1</td>
+<td>0,489</td>
+</tr>
+<tr>
+<td>lampadaire noir éteint (texte exact indexé)</td>
+<td>1</td>
+<td>0,0</td>
+</tr>
+</tbody>
+</table>
+<p>Le texte exact donne une distance nulle et le rang 1 : la chaîne
+indexation, stockage, recherche est saine. L'hypothèse est que la couleur et
+l'état font partie du texte indexé, et qu'une requête réduite au nom de
+l'objet s'en éloigne trop. Elle repose sur deux cas seulement et n'a pas été
+testée plus largement.</p>
+<h2 id="limites-de-ces-mesures">Limites de ces mesures</h2>
+<ul>
+<li><strong>Petit échantillon</strong> : 10 requêtes, écrites par la même personne qui a
+  conçu le système. Le 9 sur 10 donne une tendance, pas une performance
+  garantie.</li>
+<li><strong>Faux positifs récurrents</strong> : sur les 10 requêtes, <code>workbench_1</code> apparaît
+  6 fois dans les résultats et <code>desktop_0</code> 4 fois. Ces images contiennent
+  beaucoup de petits objets, donc souvent un élément vaguement proche.</li>
+<li><strong>Pas de seuil de distance</strong> : les bonnes réponses vont de 0,36 à 0,95 et
+  les mauvaises commencent vers 0,54. On ne peut pas filtrer les résultats
+  non pertinents avec une valeur fixe.</li>
+<li><strong>Synonymes</strong> : la recherche dépend des mots choisis par le VLM.</li>
+<li><strong>Facteur 10 non vérifié</strong> : le nombre d'éléments demandés à ChromaDB
+  (<code>k × 10</code>) n'a pas été confronté au nombre réel de doublons d'image.</li>
+</ul>
+<h2 id="pistes-non-testees">Pistes non testées</h2>
+<ul>
+<li>Ajouter le préfixe de tâche recommandé pour <code>embeddinggemma</code> côté requête
+  (à vérifier dans la fiche du modèle).</li>
+<li>Comparer des variantes du texte indexé, par exemple avec et sans l'état.</li>
+<li>Une reformulation de la requête par un LLM avant l'embedding, pour les
+  synonymes (hors périmètre actuel).</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.top", "search.suggest", "content.code.copy"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  </body>
+</html>
