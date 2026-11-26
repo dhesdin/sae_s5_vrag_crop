@@ -18,10 +18,10 @@ def _build_dependencies() -> tuple[OllamaEmbedding, ChromaVectorIndex]:
 
     Raises:
         FileNotFoundError: If the Chroma index file (chroma.sqlite3) is missing in the expected path.
+
     Returns:
         tuple[OllamaEmbedding, ChromaVectorIndex]: The embedding model and the vector index.
     """
-    # VErif paths
     if not (CHROMA_PATH / "chroma.sqlite3").exists():
         raise FileNotFoundError(f"No Chroma index in {CHROMA_PATH} (chroma.sqlite3 missing), run scripts/manual_dataset_index.py first")
 
@@ -49,13 +49,14 @@ async def search_images(query: str, k: int = 5) -> list[dict]:
     Returns:
         list[dict]: At most k results, sorted by increasing distance. Each result
             has the keys "image" (file name, e.g. "market_0.jpg"), "distance"
-            (float, smaller means closer) , "similarity" (float between 0 and 1, higher means closer) and "matched" (text of the closest
+            (float, smaller means closer), "similarity" (float, cosine similarity
+            from -1 to 1, higher means closer) and "matched" (text of the closest
             element of the image).
 
     Raises:
         TypeError: If query is not a string, or k is not an integer (bool refused).
         ValueError: If query is blank or k is lower than 1.
-        FileNotFoundError: If the Chroma index folder does not exist.
+        FileNotFoundError: If no Chroma index is found (chroma.sqlite3 missing).
         OllamaConnectionError: If the Ollama server cannot be reached.
     """
 
