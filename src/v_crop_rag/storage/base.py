@@ -8,7 +8,8 @@ class VectoreSearchResult:
     """result of vectorial research"""
 
     id: str
-    distance: float
+    distance: float  # given by the index : 0 = same , lower = closest
+    similarity: float  # relevance score: 1 = same, higher = closest
     metadata: dict[str, Any]
 
 
